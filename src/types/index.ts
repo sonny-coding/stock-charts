@@ -11,3 +11,10 @@ export interface Margins {
   operatingProfitMargin: number;
   netProfitMargin: number;
 }
+
+export interface AnnualReport {
+  fiscalDateEnding: string;
+  totalRevenue: string;
+  operatingIncome: string;
+  netIncome: string;
+}
