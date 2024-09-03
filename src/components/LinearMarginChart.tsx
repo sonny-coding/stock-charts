@@ -24,6 +24,10 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 
+type LinearMarginChartProps = {
+  labels: { key: string; color: string }[];
+};
+
 const chartConfig = {
   grossMargin: {
     label: `Gross Margin`,
@@ -39,13 +43,41 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-export function LinearMarginChart() {
+export function LinearMarginChart({ labels }: LinearMarginChartProps) {
   const [isAnnual, setIsAnnual] = useState(true);
+
+  const initials: {
+    [key: string]: boolean | null;
+  } = {};
+
+  labels.forEach(({ key }) => {
+    initials[key] = false;
+  });
+  const [series, setSeries] = useState(initials);
+
   let processedData;
   processedData = processMargins(aapl.annualReports);
   if (!isAnnual) {
     processedData = processMargins(aapl.quarterlyReports.slice(0, 15));
   }
+
+  const handleLegendMouseEnter = (e) => {
+    console.log(e);
+    if (!series[e.dataKey]) {
+      setSeries({ ...series });
+    }
+  };
+
+  const handleLegendMouseLeave = () => {
+    setSeries({ ...series });
+  };
+  const select = (e) => {
+    setSeries({
+      ...series,
+      [e.dataKey]: !series[e.dataKey],
+    });
+  };
+
   return (
     <div>
       <div className="flex items-center justify-center">
@@ -132,40 +164,27 @@ export function LinearMarginChart() {
                   />
                 }
               />
-              <Line
-                dataKey="grossMargin"
-                type="linear"
-                stroke="var(--color-grossMargin)"
-                strokeWidth={2}
-                dot={false}
-              />
-              <Line
-                dataKey="operatingMargin"
-                type="linear"
-                stroke="var(--color-operatingMargin)"
-                strokeWidth={2}
-                dot={false}
-              />
+              {labels.map((label, index) => (
+                <Line
+                  key={index}
+                  dataKey={label.key}
+                  type="linear"
+                  stroke={label.color}
+                  strokeWidth={2}
+                  dot={false}
+                  hide={series[label.key] === true}
+                />
+              ))}
 
-              <Line
-                dataKey="netMargin"
-                type="linear"
-                stroke="var(--color-netMargin)"
-                strokeWidth={2}
-                dot={false}
+              <ChartLegend
+                verticalAlign="top"
+                onClick={select}
+                onMouseOver={handleLegendMouseEnter}
+                onMouseOut={handleLegendMouseLeave}
               />
-              <ChartLegend content={<ChartLegendContent />} />
             </LineChart>
           </ChartContainer>
         </CardContent>
-        {/* <CardFooter className="flex-col items-start gap-2 text-sm">
-          <div className="flex gap-2 font-medium leading-none">
-            Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
-          </div>
-          <div className="leading-none text-muted-foreground">
-            Showing total visitors for the last 6 months
-          </div>
-        </CardFooter> */}
       </Card>
     </div>
   );

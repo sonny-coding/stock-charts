@@ -24,6 +24,10 @@ import { ChartLegend, ChartLegendContent } from "@/components/ui/chart";
 import { aapl } from "@/data";
 import { processGrowth } from "@/lib/utils";
 
+type LinearGrowthChartProps = {
+  labels: { key: string; color: string }[];
+};
+
 const chartConfig = {
   revenueGrowth: {
     label: "Revenue Growth",
@@ -39,8 +43,35 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-export function LinearGrowthChart() {
+export function LinearGrowthChart({ labels }: LinearGrowthChartProps) {
   const [isAnnual, setIsAnnual] = useState(true);
+
+  const initials: {
+    [key: string]: boolean | null;
+  } = {};
+
+  labels.forEach(({ key }) => {
+    initials[key] = false;
+  });
+  const [series, setSeries] = useState(initials);
+
+  const handleLegendMouseEnter = (e) => {
+    console.log(e);
+    if (!series[e.dataKey]) {
+      setSeries({ ...series });
+    }
+  };
+
+  const handleLegendMouseLeave = () => {
+    setSeries({ ...series });
+  };
+  const select = (e) => {
+    setSeries({
+      ...series,
+      [e.dataKey]: !series[e.dataKey],
+    });
+  };
+
   let processedData;
   processedData = processGrowth(aapl.annualReports);
   if (!isAnnual) {
@@ -124,41 +155,38 @@ export function LinearGrowthChart() {
                   />
                 }
               />
-              <ChartLegend content={<ChartLegendContent />} />
-
+              {/* <ChartLegend content={<ChartLegendContent />} /> */}
+              <ChartLegend
+                verticalAlign="top"
+                onClick={select}
+                onMouseOver={handleLegendMouseEnter}
+                onMouseOut={handleLegendMouseLeave}
+              />
+              {/* 
               <Bar
                 dataKey="revenueGrowth"
                 fill="var(--color-revenueGrowth)"
                 radius={4}
               />
+
               <Bar
                 dataKey="netIncomeGrowth"
                 fill="var(--color-netIncomeGrowth)"
                 radius={4}
-              />
-
-              {/* <Bar
-              dataKey="grossProfit"
-              fill="var(--color-grossProfit)"
-              radius={4}
-              />
-              <Bar
-              dataKey="operatingIncome"
-              fill="var(--color-operatingIncome)"
-              radius={4}
               /> */}
-              {/* <Bar dataKey="netIncome" fill="var(--color-netIncome)" radius={4} /> */}
+
+              {labels.map((label, index) => (
+                <Bar
+                  key={index}
+                  dataKey={label.key}
+                  fill={label.color}
+                  radius={4}
+                  hide={series[label.key] === true}
+                />
+              ))}
             </BarChart>
           </ChartContainer>
         </CardContent>
-        {/* <CardFooter className="flex-col items-start gap-2 text-sm">
-          <div className="flex gap-2 font-medium leading-none">
-            Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
-          </div>
-          <div className="leading-none text-muted-foreground">
-            Showing total visitors for the last 6 months
-          </div>
-        </CardFooter> */}
       </Card>
     </div>
   );

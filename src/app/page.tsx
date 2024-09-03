@@ -6,9 +6,11 @@ import { IncomeBarChart } from "@/components/IncomeBarChart";
 import { LinearMarginChart } from "@/components/LinearMarginChart";
 import { LinearGrowthChart } from "@/components/LinearGrowthChart";
 import CombinedChart from "@/components/CombinedChart";
-import OperatingExpensesChart from "@/components/OperatingExpensesChart";
 import ChartWithCrossableLegend from "@/components/ClickableLegend";
 import BarGraph from "@/components/BarGraph";
+import LineBarComposedChart from "@/components/LineBarComposedChart";
+
+import { LabelConfig } from "@/components/LineBarComposedChart";
 
 const page = ({
   searchParams,
@@ -50,27 +52,49 @@ const page = ({
     ],
   };
 
-  let inputLabels = [
-    { key: "prosumer1", color: "#8884d8" },
-    { key: "prosumer2", color: "#82ca9d" },
-    { key: "prosumer3", color: "#81cc2d" },
-  ];
-  let labels = [
+  let incomeBarLabels = [
     { key: "revenue", color: "hsl(var(--chart-1))" },
     { key: "grossProfit", color: "hsl(var(--chart-2))" },
     { key: "operatingIncome", color: "hsl(var(--chart-3))" },
     { key: "netIncome", color: "hsl(var(--chart-4))" },
   ];
+  let marginLabels = [
+    { key: "grossMargin", color: "hsl(var(--chart-1))" },
+    { key: "operatingMargin", color: "hsl(var(--chart-2))" },
+    { key: "netMargin", color: "hsl(var(--chart-3))" },
+  ];
+  let growthLabels = [
+    { key: "revenueGrowth", color: "hsl(var(--chart-1))" },
+    // { key: "operatingIncomeGrowth", color: "hsl(var(--chart-2))" },
+    { key: "netIncomeGrowth", color: "hsl(var(--chart-2))" },
+  ];
+  const labelConfig: LabelConfig = {
+    operatingExpenses: {
+      label: "Operating Expenses",
+      color: "hsl(var(--chart-1))",
+      type: "line",
+    },
+    sellingGeneralAndAdministrative: {
+      label: "SG&A",
+      color: "hsl(var(--chart-2))",
+      type: "bar",
+    },
+    researchAndDevelopment: {
+      label: "R&D",
+      color: "hsl(var(--chart-3))",
+      type: "bar",
+    },
+  };
 
   return (
     <div className="">
       <Search placeholder="AMD" />
       {/* <Charts query={query} /> */}
-      <IncomeBarChart labels={labels} />
-      <LinearMarginChart />
-      <LinearGrowthChart />
-      <OperatingExpensesChart />
-      <ChartWithCrossableLegend />
+      <IncomeBarChart labels={incomeBarLabels} />
+      <LinearMarginChart labels={marginLabels} />
+      <LinearGrowthChart labels={growthLabels} />
+      <LineBarComposedChart labels={labelConfig} />
+      {/* <ChartWithCrossableLegend /> */}
       {/* <BarGraph
         title="DayAhead Predicted Consumption"
         {...inputData}

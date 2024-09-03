@@ -115,3 +115,13 @@ export const processOperatingExpenses = (data: FinancialData[]) => {
     })
     .reverse();
 };
+
+export const formatNumber = (value: number) => {
+  if (typeof value === "number") {
+    return new Intl.NumberFormat("en-US", {
+      notation: "compact",
+      compactDisplay: "short",
+    }).format(value);
+  }
+  return value;
+};

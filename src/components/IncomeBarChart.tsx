@@ -1,28 +1,18 @@
 "use client";
 
-import { MouseEvent } from "react";
 import { useState } from "react";
-import { TrendingUp } from "lucide-react";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import { ChartLegend, ChartLegendContent } from "@/components/ui/chart";
+import { ChartLegend } from "@/components/ui/chart";
 import { Button } from "./ui/button";
 
-// import { anf } from "@/constants";
 import { aapl } from "@/data";
 import { processData } from "@/lib/utils";
 
@@ -51,15 +41,15 @@ const chartConfig = {
 
 export function IncomeBarChart({ labels }: IncomeBarChartProps) {
   const [isAnnual, setIsAnnual] = useState(true);
-  const [barProps, setBarProps] = useState(
-    labels.reduce(
-      (a, { key }) => {
-        a[key] = false;
-        return a;
-      },
-      { hover: null }
-    )
-  );
+
+  const initials: {
+    [key: string]: boolean | null;
+  } = {};
+
+  labels.forEach(({ key }) => {
+    initials[key] = false;
+  });
+  const [series, setSeries] = useState(initials);
 
   let processedData;
   processedData = processData(aapl.annualReports);
@@ -67,20 +57,20 @@ export function IncomeBarChart({ labels }: IncomeBarChartProps) {
     processedData = processData(aapl.quarterlyReports.slice(0, 15));
   }
 
-  const handleLegendMouseEnter = (e: MouseEvent) => {
-    if (!barProps[e.dataKey]) {
-      setBarProps({ ...barProps, hover: e.dataKey });
+  const handleLegendMouseEnter = (e) => {
+    console.log(e);
+    if (!series[e.dataKey]) {
+      setSeries({ ...series });
     }
   };
 
-  const handleLegendMouseLeave = (e: MouseEvent) => {
-    setBarProps({ ...barProps, hover: null });
+  const handleLegendMouseLeave = () => {
+    setSeries({ ...series });
   };
-  const selectBar = (e) => {
-    setBarProps({
-      ...barProps,
-      [e.dataKey]: !barProps[e.dataKey],
-      hover: null,
+  const select = (e) => {
+    setSeries({
+      ...series,
+      [e.dataKey]: !series[e.dataKey],
     });
   };
 
@@ -169,42 +159,18 @@ export function IncomeBarChart({ labels }: IncomeBarChartProps) {
               />
               <ChartLegend
                 verticalAlign="top"
-                onClick={selectBar}
+                onClick={select}
                 onMouseOver={handleLegendMouseEnter}
                 onMouseOut={handleLegendMouseLeave}
               />
-              {/* <Bar
-                className="block"
-                dataKey="revenue"
-                fill="var(--color-revenue)"
-                radius={4}
-              />
 
-              <Bar
-                dataKey="grossProfit"
-                fill="var(--color-grossProfit)"
-                radius={4}
-              />
-              <Bar
-                dataKey="operatingIncome"
-                fill="var(--color-operatingIncome)"
-                radius={4}
-              />
-              <Bar
-                dataKey="netIncome"
-                fill="var(--color-netIncome)"
-                radius={4}
-              /> */}
               {labels.map((label, index) => (
                 <Bar
                   radius={4}
                   key={index}
                   dataKey={label.key}
                   fill={label.color}
-                  hide={barProps[label.key] === true}
-                  fillOpacity={Number(
-                    barProps.hover === label.key || !barProps.hover ? 1 : 0.6
-                  )}
+                  hide={series[label.key] === true}
                 />
               ))}
             </BarChart>
