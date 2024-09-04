@@ -20,7 +20,7 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { aapl } from "@/data";
-import { processOperatingExpenses, formatNumber } from "@/lib/utils";
+import { processOperatingExpenses, formatValue } from "@/lib/utils";
 import { CustomizedLegend } from "./ui/CustomizedLegend";
 
 export interface LabelConfig {
@@ -141,7 +141,7 @@ const LineBarComposedChart = ({ labels }: LineBarComposedChartProps) => {
                             ?.label || name}
                           <div className="ml-auto flex items-baseline gap-0.5 font-mono font-medium tabular-nums text-foreground">
                             {typeof value === "number"
-                              ? formatNumber(value)
+                              ? formatValue(value)
                               : value}
                           </div>
                         </div>
@@ -178,6 +178,7 @@ const LineBarComposedChart = ({ labels }: LineBarComposedChartProps) => {
                   <CustomizedLegend
                     onClick={handleLegendClick}
                     visibleSeries={visibleSeries}
+                    chartConfig={chartConfig}
                   />
                 }
               />

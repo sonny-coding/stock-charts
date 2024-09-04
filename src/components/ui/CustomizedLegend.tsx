@@ -1,3 +1,5 @@
+import { ChartConfig } from "./chart";
+
 interface LegendPayload {
   value: string;
   type: string;
@@ -10,12 +12,14 @@ interface CustomizedLegendProps {
   payload?: LegendPayload[];
   onClick: (dataKey: string) => void;
   visibleSeries: Record<string, boolean>;
+  chartConfig: ChartConfig;
 }
 
 export const CustomizedLegend: React.FC<CustomizedLegendProps> = ({
   payload,
   onClick,
   visibleSeries,
+  chartConfig,
 }) => {
   if (!payload) return null;
   return (
@@ -32,7 +36,7 @@ export const CustomizedLegend: React.FC<CustomizedLegendProps> = ({
             className="inline-block w-3 h-3 mr-2"
             style={{ backgroundColor: entry.color }}
           ></span>
-          {entry.value}
+          {chartConfig[entry.dataKey].label || entry.value}
         </li>
       ))}
     </ul>

@@ -4,15 +4,33 @@ import { twMerge } from "tailwind-merge";
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
-interface FinancialData {
+export interface FinancialData {
   fiscalDateEnding: string;
-  totalRevenue: string;
-  operatingIncome: string;
-  netIncome: string;
+  reportedCurrency: string;
   grossProfit: string;
-  operatingExpenses: string;
+  totalRevenue: string;
+  costOfRevenue: string;
+  costofGoodsAndServicesSold: string;
+  operatingIncome: string;
   sellingGeneralAndAdministrative: string;
   researchAndDevelopment: string;
+  operatingExpenses: string;
+  investmentIncomeNet: string;
+  netInterestIncome: string;
+  interestIncome: string;
+  interestExpense: string;
+  nonInterestIncome: string;
+  otherNonOperatingIncome: string;
+  depreciation: string;
+  depreciationAndAmortization: string;
+  incomeBeforeTax: string;
+  incomeTaxExpense: string;
+  interestAndDebtExpense: string;
+  netIncomeFromContinuingOperations: string;
+  comprehensiveIncomeNetOfTax: string;
+  ebit: string;
+  ebitda: string;
+  netIncome: string;
 }
 
 interface GrowthRate {
@@ -31,32 +49,32 @@ export const processData = (data: FinancialData[]) => {
         grossProfit: Number(report.grossProfit),
         operatingIncome: Number(report.operatingIncome),
         netIncome: Number(report.netIncome),
-        grossMargin:
-          parseFloat(report.grossProfit) / parseFloat(report.totalRevenue),
       };
     })
     .reverse();
 };
 export const processMargins = (data: FinancialData[]) => {
   return data
-    .map((report: FinancialData) => {
-      return {
-        year: report.fiscalDateEnding,
-        grossMargin: (
-          (parseFloat(report.grossProfit) / parseFloat(report.totalRevenue)) *
-          100
-        ).toFixed(2),
-        operatingMargin: (
-          (parseFloat(report.operatingIncome) /
-            parseFloat(report.totalRevenue)) *
-          100
-        ).toFixed(2),
-        netMargin: (
-          (parseFloat(report.netIncome) / parseFloat(report.totalRevenue)) *
-          100
-        ).toFixed(2),
-      };
-    })
+    .map(
+      ({
+        fiscalDateEnding,
+        grossProfit,
+        totalRevenue,
+        operatingIncome,
+        netIncome,
+      }) => ({
+        year: fiscalDateEnding,
+        grossMargin: Number(
+          (parseFloat(grossProfit) / parseFloat(totalRevenue)).toFixed(4)
+        ),
+        operatingMargin: Number(
+          (parseFloat(operatingIncome) / parseFloat(totalRevenue)).toFixed(4)
+        ),
+        netMargin: Number(
+          (parseFloat(netIncome) / parseFloat(totalRevenue)).toFixed(4)
+        ),
+      })
+    )
     .reverse();
 };
 
@@ -77,7 +95,7 @@ export function processGrowth(data: FinancialData[]): GrowthRate[] {
       const currentValue = parseFloat(current);
       const previousValue = parseFloat(previous);
       return Number(
-        (((currentValue - previousValue) / previousValue) * 100).toFixed(2)
+        ((currentValue - previousValue) / previousValue).toFixed(4)
       );
     };
 
@@ -116,12 +134,20 @@ export const processOperatingExpenses = (data: FinancialData[]) => {
     .reverse();
 };
 
-export const formatNumber = (value: number) => {
-  if (typeof value === "number") {
+export const formatValue = (value: number, isPercent: boolean = false) => {
+  if (typeof value !== "number") {
+    return value;
+  }
+
+  if (isPercent) {
+    return new Intl.NumberFormat("en-US", {
+      style: "percent",
+      maximumFractionDigits: 2,
+    }).format(value);
+  } else {
     return new Intl.NumberFormat("en-US", {
       notation: "compact",
       compactDisplay: "short",
     }).format(value);
   }
-  return value;
 };

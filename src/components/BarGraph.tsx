@@ -1,83 +1,175 @@
-import React, { useState } from "react";
-import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, Label } from "recharts";
+"use client";
 
-const BarGraph = ({
-  title,
-  dataKey,
-  oxLabel,
-  oyLabel,
-  values,
-  yLimit,
-  labels,
-}) => {
-  const [barProps, setBarProps] = useState(
-    labels.reduce(
-      (a, { key }) => {
-        a[key] = false;
-        return a;
-      },
-      { hover: null }
-    )
+import { useState } from "react";
+import { Button } from "./ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Bar, XAxis, YAxis, CartesianGrid, Legend, BarChart } from "recharts";
+import {
+  ChartConfig,
+  ChartContainer,
+  ChartLegend,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@/components/ui/chart";
+import { aapl } from "@/data";
+import { formatValue } from "@/lib/utils";
+import { CustomizedLegend } from "./ui/CustomizedLegend";
+import { FinancialData } from "@/lib/utils";
+
+export interface LabelConfig {
+  [key: string]: {
+    label: string;
+    color: string;
+    type: "bar" | "line";
+  };
+}
+
+interface BarChartProps {
+  // data: DataPoint[];
+  labels: LabelConfig;
+  title: string;
+  processData: (data: FinancialData[]) => any[] | undefined;
+  unit?: string;
+  isPercent?: boolean;
+}
+
+const BarGraph = ({ labels, title, processData, isPercent }: BarChartProps) => {
+  const [isAnnual, setIsAnnual] = useState(true);
+
+  // what the hell does record even do
+  const [visibleSeries, setVisibleSeries] = useState<Record<string, boolean>>(
+    Object.keys(labels).reduce((acc, key) => ({ ...acc, [key]: true }), {})
   );
 
-  const handleLegendMouseEnter = (e) => {
-    if (!barProps[e.dataKey]) {
-      setBarProps({ ...barProps, hover: e.dataKey });
-    }
+  // dynamically create config
+  const chartConfig: ChartConfig = Object.entries(labels).reduce(
+    (acc, [key, value]) => {
+      acc[key] = { label: value.label, color: value.color };
+      return acc;
+    },
+    {} as ChartConfig
+  );
+
+  const handleLegendClick = (dataKey: string) => {
+    setVisibleSeries((prev) => ({
+      ...prev,
+      [dataKey]: !prev[dataKey as keyof typeof visibleSeries],
+    }));
   };
 
-  const handleLegendMouseLeave = (e) => {
-    setBarProps({ ...barProps, hover: null });
-  };
-
-  const selectBar = (e) => {
-    setBarProps({
-      ...barProps,
-      [e.dataKey]: !barProps[e.dataKey],
-      hover: null,
-    });
-  };
+  let processedData = processData(
+    isAnnual ? aapl.annualReports : aapl.quarterlyReports.slice(0, 15)
+  );
 
   return (
     <div>
-      <h3>{title}</h3>
-      <BarChart
-        width={600}
-        height={300}
-        data={values}
-        margin={{ top: 30, right: 30, left: 20, bottom: 5 }}
-      >
-        <XAxis dataKey={dataKey}>
-          <Label value={oxLabel} position="insideBottomRight" dy={10} dx={20} />
-        </XAxis>
-        <YAxis type="number" domain={yLimit}>
-          <Label
-            value={oyLabel}
-            position="left"
-            angle={-90}
-            dy={-20}
-            dx={-10}
-          />
-        </YAxis>
-        <Tooltip />
-        <Legend
-          onClick={selectBar}
-          onMouseOver={handleLegendMouseEnter}
-          onMouseOut={handleLegendMouseLeave}
-        />
-        {labels.map((label, index) => (
-          <Bar
-            key={index}
-            dataKey={label.key}
-            fill={label.color}
-            stackId={dataKey}
-            hide={barProps[label.key] === true}
-            fillOpacity={Number(
-              barProps.hover === label.key || !barProps.hover ? 1 : 0.6
-            )}
-          />
-        ))}
-      </BarChart>
+      <div className="flex items-center justify-center">
+        <Button
+          disabled={isAnnual}
+          onClick={() => setIsAnnual(true)}
+          size="lg"
+          variant="outline"
+        >
+          Annual
+        </Button>
+        <Button
+          onClick={() => setIsAnnual(false)}
+          disabled={!isAnnual}
+          size="lg"
+          variant="outline"
+        >
+          Quarterly
+        </Button>
+      </div>
+      <Card className="w-full mx-auto">
+        <CardHeader>
+          <CardTitle>{title}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <ChartContainer config={chartConfig}>
+            <BarChart
+              accessibilityLayer
+              data={processedData}
+              margin={{
+                left: 12,
+                right: 12,
+              }}
+            >
+              <CartesianGrid vertical={false} />
+              <XAxis
+                dataKey="year"
+                tickLine={false}
+                axisLine={false}
+                tickMargin={8}
+                tickFormatter={
+                  isAnnual
+                    ? (value) => value.slice(0, 4)
+                    : (value) => value.slice(0, 7)
+                }
+              />
+              <YAxis
+                axisLine={false}
+                tickFormatter={(value) => {
+                  return formatValue(value, isPercent);
+                }}
+              />
+              <ChartTooltip
+                cursor={false}
+                content={
+                  <ChartTooltipContent
+                    labelFormatter={(value) => value.slice(0, 4)}
+                    formatter={(value, name) => (
+                      <>
+                        <div
+                          className="h-2.5 w-1.5 shrink-0 rounded-[2px] bg-[--color-bg]"
+                          style={
+                            {
+                              "--color-bg": `var(--color-${name})`,
+                            } as React.CSSProperties
+                          }
+                        />
+                        <div className="flex min-w-[160px] items-center text-xs text-muted-foreground">
+                          {chartConfig[name as keyof typeof chartConfig]
+                            ?.label || name}
+                          <div className="ml-auto flex items-baseline gap-0.5 font-mono font-medium tabular-nums text-foreground">
+                            {typeof value === "number"
+                              ? formatValue(value, isPercent)
+                              : value}
+                          </div>
+                        </div>
+                      </>
+                    )}
+                  />
+                }
+              />
+
+              {Object.entries(labels).map(
+                ([key, config]) =>
+                  config.type === "bar" && (
+                    <Bar
+                      key={key}
+                      dataKey={key}
+                      fill={config.color}
+                      radius={4}
+                      hide={!visibleSeries[key]}
+                    />
+                  )
+              )}
+
+              <ChartLegend
+                verticalAlign="top"
+                content={
+                  <CustomizedLegend
+                    onClick={handleLegendClick}
+                    visibleSeries={visibleSeries}
+                    chartConfig={chartConfig}
+                  />
+                }
+              />
+            </BarChart>
+          </ChartContainer>
+        </CardContent>
+      </Card>
     </div>
   );
 };
