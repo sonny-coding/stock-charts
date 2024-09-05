@@ -1,4 +1,5 @@
 import { stockSymbols } from "@/data";
+import Link from "next/link";
 
 const handleSearch = (query: string) => {
   const filteredSymbols = stockSymbols.filter((symbol) => {
@@ -19,18 +20,22 @@ const SearchResults = ({ query }: { query: string }) => {
   const results = handleSearch(query);
 
   return (
-    <div className="container mx-auto px-4 py-6">
+    <div className="mt-4 w-full">
       {results.length > 0 ? (
-        <ul className="list-none p-0 m-0">
-          {results.map((result) => (
-            <li
-              key={result.symbol}
-              className="flex items-center justify-between p-2 border-b border-gray-200 cursor-pointer"
-            >
-              {result.name} ({result.symbol})
-            </li>
-          ))}
-        </ul>
+        <>
+          <h3 className="text-lg font-semibold mb-2">Matching Stocks:</h3>
+          <ul className="space-y-2">
+            {results.map((result) => (
+              <Link
+                href={`/s/${result.symbol}`}
+                key={result.symbol}
+                className="bg-muted hover:bg-cyan-50 p-2 rounded flex justify-between items-center cursor-pointer"
+              >
+                {result.name} ({result.symbol})
+              </Link>
+            ))}
+          </ul>
+        </>
       ) : (
         <p className="text-center p-4 text-gray-500">No results found</p>
       )}

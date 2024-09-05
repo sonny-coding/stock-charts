@@ -35,53 +35,18 @@ const page = ({
   const query = searchParams?.query || "";
 
   return (
-    <div className="">
-      <Search placeholder="search..." />
-      <SearchResults query={query} />
+    <main className="flex-grow container mx-auto px-4 py-8 max-h-screen">
+      <div className="max-w-2xl mx-auto">
+        <h2 className="text-3xl font-bold text-center mb-8">
+          Search for Stock Tickers
+        </h2>
+        <div className="flex flex-col items-center space-x-2">
+          <Search placeholder="Enter stock ticker..." />
+          <SearchResults query={query} />
+        </div>
+      </div>
       {/* <Charts query={query} /> */}
-      <BarGraph
-        labels={barLabelConfig}
-        title={"Revenue & Earnings"}
-        processData={processData}
-        apiData={aapl}
-      />
-      <BarGraph
-        labels={growthLabelConfig}
-        title={"Growth"}
-        processData={processGrowth}
-        isPercent={true}
-        apiData={aapl}
-      />
-      <LineGraph
-        processData={processMargins}
-        labels={marginLabelConfig}
-        title="Margin"
-        isPercent={true}
-        apiData={aapl}
-      />
-      <LineGraph
-        processData={processCostsOverRevenue}
-        labels={costRatioLabelConfig}
-        title="Expenses / Revenue"
-        isPercent={true}
-        apiData={aapl}
-      />
-      <LineBarComposedChart labels={composedLabelConfig} />
-      {/*   CASH FLOWS */}
-      <BarGraph
-        labels={fcfLabelConfig}
-        title={"Free Cash Flow"}
-        processData={processFCF}
-        apiData={aaplCashFlow}
-        // isPercent={true}
-      />
-      <LineGraph
-        labels={cfLabelConfig}
-        processData={processCashFlow}
-        title="Cash Flow Breakdown"
-        apiData={aaplCashFlow}
-      />
-    </div>
+    </main>
   );
 };
 
