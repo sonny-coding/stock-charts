@@ -23,7 +23,6 @@ import {
 import { aapl } from "@/data";
 import { formatValue } from "@/lib/utils";
 import { CustomizedLegend } from "./ui/CustomizedLegend";
-import { FinancialData } from "@/lib/utils";
 
 export interface LabelConfig {
   [key: string]: {
@@ -37,9 +36,14 @@ interface BarGraphProps {
   // data: DataPoint[];
   labels: LabelConfig;
   title: string;
-  processData: (data: FinancialData[]) => any[] | undefined;
+  processData: (data: any[]) => any[] | undefined;
   unit?: string;
   isPercent?: boolean;
+  apiData: {
+    symbol: string;
+    annualReports: any[];
+    quarterlyReports: any[];
+  };
 }
 
 const LineGraph = ({
@@ -47,6 +51,7 @@ const LineGraph = ({
   title,
   processData,
   isPercent,
+  apiData,
 }: BarGraphProps) => {
   const [isAnnual, setIsAnnual] = useState(true);
 
@@ -72,7 +77,7 @@ const LineGraph = ({
   };
 
   let processedData = processData(
-    isAnnual ? aapl.annualReports : aapl.quarterlyReports.slice(0, 15)
+    isAnnual ? apiData.annualReports : apiData.quarterlyReports.slice(0, 15)
   );
 
   return (

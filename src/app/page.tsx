@@ -4,8 +4,26 @@ import Search from "@/components/Search";
 import BarGraph from "@/components/BarGraph";
 import LineBarComposedChart from "@/components/LineBarComposedChart";
 import { LabelConfig } from "@/components/LineBarComposedChart";
-import { processData, processGrowth, processMargins } from "@/lib/utils";
+import {
+  processData,
+  processGrowth,
+  processMargins,
+  processCostsOverRevenue,
+  processFCF,
+  processCashFlow,
+} from "@/lib/utils";
 import LineGraph from "@/components/LineGraph";
+import SearchResults from "@/components/SearchResults";
+import { aapl, aaplCashFlow } from "@/data";
+import {
+  barLabelConfig,
+  cfLabelConfig,
+  composedLabelConfig,
+  costRatioLabelConfig,
+  fcfLabelConfig,
+  growthLabelConfig,
+  marginLabelConfig,
+} from "@/lib/graphconfig";
 
 const page = ({
   searchParams,
@@ -16,98 +34,53 @@ const page = ({
 }) => {
   const query = searchParams?.query || "";
 
-  const growthLabelConfig: LabelConfig = {
-    revenueGrowth: {
-      label: "Revenue Growth",
-      color: "hsl(var(--chart-1))",
-      type: "bar",
-    },
-    netIncomeGrowth: {
-      label: "Income Growth",
-      color: "hsl(var(--chart-2))",
-      type: "bar",
-    },
-  };
-  const marginLabelConfig: LabelConfig = {
-    grossMargin: {
-      label: "Gross Margin",
-      color: "hsl(var(--chart-1))",
-      type: "line",
-    },
-    operatingMargin: {
-      label: "Operating Margin",
-      color: "hsl(var(--chart-2))",
-      type: "line",
-    },
-    netMargin: {
-      label: "Net Margin",
-      color: "hsl(var(--chart-3))",
-      type: "line",
-    },
-  };
-  const composedLabelConfig: LabelConfig = {
-    operatingExpenses: {
-      label: "Operating Expenses",
-      color: "hsl(var(--chart-1))",
-      type: "line",
-    },
-    sellingGeneralAndAdministrative: {
-      label: "SG&A",
-      color: "hsl(var(--chart-2))",
-      type: "bar",
-    },
-    researchAndDevelopment: {
-      label: "R&D",
-      color: "hsl(var(--chart-3))",
-      type: "bar",
-    },
-  };
-
-  const barLabelConfig: LabelConfig = {
-    revenue: {
-      label: `Revenue`,
-      color: "hsl(var(--chart-1))",
-      type: "bar",
-    },
-    grossProfit: {
-      label: `Gross Income`,
-      color: "hsl(var(--chart-2))",
-      type: "bar",
-    },
-    operatingIncome: {
-      label: "Operating Income",
-      color: "hsl(var(--chart-3))",
-      type: "bar",
-    },
-    netIncome: {
-      label: "Net Income",
-      color: "hsl(var(--chart-4))",
-      type: "bar",
-    },
-  };
-
   return (
     <div className="">
-      <Search placeholder="AMD" />
+      <Search placeholder="search..." />
+      <SearchResults query={query} />
       {/* <Charts query={query} /> */}
       <BarGraph
         labels={barLabelConfig}
         title={"Revenue & Earnings"}
         processData={processData}
+        apiData={aapl}
       />
       <BarGraph
         labels={growthLabelConfig}
         title={"Growth"}
         processData={processGrowth}
         isPercent={true}
+        apiData={aapl}
       />
       <LineGraph
         processData={processMargins}
         labels={marginLabelConfig}
         title="Margin"
         isPercent={true}
+        apiData={aapl}
+      />
+      <LineGraph
+        processData={processCostsOverRevenue}
+        labels={costRatioLabelConfig}
+        title="Expenses / Revenue"
+        isPercent={true}
+        apiData={aapl}
       />
       <LineBarComposedChart labels={composedLabelConfig} />
+      {/*   CASH FLOWS */}
+      <BarGraph
+        labels={fcfLabelConfig}
+        title={"Free Cash Flow"}
+        processData={processFCF}
+        apiData={aaplCashFlow}
+        // isPercent={true}
+      />
+      <LineGraph
+        labels={cfLabelConfig}
+        processData={processCashFlow}
+        title="Cash Flow Breakdown"
+        apiData={aaplCashFlow}
+      />
     </div>
   );
 };

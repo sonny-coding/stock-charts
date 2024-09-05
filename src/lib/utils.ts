@@ -4,7 +4,7 @@ import { twMerge } from "tailwind-merge";
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
-export interface FinancialData {
+export interface IncomeData {
   fiscalDateEnding: string;
   reportedCurrency: string;
   grossProfit: string;
@@ -40,9 +40,37 @@ interface GrowthRate {
   netIncomeGrowth: number;
 }
 
-export const processData = (data: FinancialData[]) => {
+export const processCostsOverRevenue = (data: IncomeData[]) => {
   return data
-    .map((report: FinancialData) => {
+    .map((report) => {
+      return {
+        year: report.fiscalDateEnding,
+        cogsRatio: Number(
+          (
+            parseFloat(report.costofGoodsAndServicesSold) /
+            parseFloat(report.totalRevenue)
+          ).toFixed(4)
+        ),
+        rndRatio: Number(
+          (
+            parseFloat(report.researchAndDevelopment) /
+            parseFloat(report.totalRevenue)
+          ).toFixed(4)
+        ),
+        sgaRatio: Number(
+          (
+            parseFloat(report.sellingGeneralAndAdministrative) /
+            parseFloat(report.totalRevenue)
+          ).toFixed(4)
+        ),
+      };
+    })
+    .reverse();
+};
+
+export const processData = (data: IncomeData[]) => {
+  return data
+    .map((report) => {
       return {
         year: report.fiscalDateEnding,
         revenue: Number(report.totalRevenue),
@@ -53,7 +81,7 @@ export const processData = (data: FinancialData[]) => {
     })
     .reverse();
 };
-export const processMargins = (data: FinancialData[]) => {
+export const processMargins = (data: IncomeData[]) => {
   return data
     .map(
       ({
@@ -78,7 +106,7 @@ export const processMargins = (data: FinancialData[]) => {
     .reverse();
 };
 
-export function processGrowth(data: FinancialData[]): GrowthRate[] {
+export function processGrowth(data: IncomeData[]): GrowthRate[] {
   // Sort the data by fiscal date, most recent first
   const sortedData = data.sort(
     (a, b) =>
@@ -119,9 +147,9 @@ export function processGrowth(data: FinancialData[]): GrowthRate[] {
   return growthRates.reverse();
 }
 
-export const processOperatingExpenses = (data: FinancialData[]) => {
+export const processOperatingExpenses = (data: IncomeData[]) => {
   return data
-    .map((report: FinancialData) => {
+    .map((report: IncomeData) => {
       return {
         year: report.fiscalDateEnding,
         operatingExpenses: Number(report.operatingExpenses),
@@ -134,6 +162,33 @@ export const processOperatingExpenses = (data: FinancialData[]) => {
     .reverse();
 };
 
+export const processFCF = (data: any[]) => {
+  return data
+    .map((report) => {
+      return {
+        year: report.fiscalDateEnding,
+        operatingCashFlow: Number(report.operatingCashflow),
+        capitalExpenditure: Number(report.capitalExpenditures) * -1,
+        fcf:
+          parseInt(report.operatingCashflow) -
+          parseInt(report.capitalExpenditures),
+      };
+    })
+    .reverse();
+};
+
+export const processCashFlow = (data: any[]) => {
+  return data
+    .map((report) => {
+      return {
+        year: report.fiscalDateEnding,
+        operatingCashFlow: Number(report.operatingCashflow),
+        cashflowFromInvestment: Number(report.cashflowFromInvestment),
+        cashflowFromFinancing: Number(report.cashflowFromFinancing),
+      };
+    })
+    .reverse();
+};
 export const formatValue = (value: number, isPercent: boolean = false) => {
   if (typeof value !== "number") {
     return value;

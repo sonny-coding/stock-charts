@@ -25,19 +25,19 @@ export const CustomizedLegend: React.FC<CustomizedLegendProps> = ({
   return (
     <ul className="flex justify-center space-x-4 mt-4">
       {payload.map((entry, index) => (
-        <li
+        <div
           key={`item-${index}`}
-          className={`cursor-pointer hover:opacity-75 transition-opacity ${
+          className={`cursor-pointer hover:opacity-75 transition-opacity text-center flex items-center gap-1 ${
             !visibleSeries[entry.dataKey] ? "opacity-50" : ""
           }`}
           onClick={() => onClick(entry.dataKey)}
         >
           <span
-            className="inline-block w-3 h-3 mr-2"
+            className="inline-block w-4 h-3"
             style={{ backgroundColor: entry.color }}
           ></span>
           {chartConfig[entry.dataKey].label || entry.value}
-        </li>
+        </div>
       ))}
     </ul>
   );
