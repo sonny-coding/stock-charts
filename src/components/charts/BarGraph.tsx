@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Button } from "./ui/button";
+import { Button } from "../ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Bar, XAxis, YAxis, CartesianGrid, Legend, BarChart } from "recharts";
 import {
@@ -12,7 +12,9 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { formatValue } from "@/lib/utils";
-import { CustomizedLegend } from "./ui/CustomizedLegend";
+import { CustomizedLegend } from "./CustomizedLegend";
+import ToggleButton from "./ToggleButton";
+import DualRangeSliderCustomLabel from "./DualRangeSliderCustom";
 
 export interface LabelConfig {
   [key: string]: {
@@ -44,6 +46,7 @@ const BarGraph = ({
   apiData,
 }: BarChartProps) => {
   const [isAnnual, setIsAnnual] = useState(true);
+  const [values, setValues] = useState([0, 10]);
 
   // what the hell does record even do
   const [visibleSeries, setVisibleSeries] = useState<Record<string, boolean>>(
@@ -72,30 +75,30 @@ const BarGraph = ({
 
   return (
     <Card className="w-full mx-auto">
-      <div className="flex items-center justify-center font-bold text-xs [&>*]:duration-300">
-        <button
-          className={`bg-slate-100 hover:opacity-60 py-2 px-3 border-b-2 ${
-            isAnnual ? "border-black" : "text-slate-500"
-          }`}
-          onClick={() => {
-            setIsAnnual(true);
+      <div className="pt-2 flex items-center justify-center font-bold [&>*]:duration-300">
+        <ToggleButton
+          handleClick={() => {
+            setIsAnnual((prev) => {
+              return !prev;
+            });
           }}
-        >
-          Annual
-        </button>
-        <button
-          className={`bg-slate-100 hover:opacity-60 py-2 px-3 border-b-2 ${
-            !isAnnual ? "border-black" : "text-slate-500"
-          }`}
-          onClick={() => {
-            setIsAnnual(false);
+          isAnnual={isAnnual}
+          label="Annual"
+        />
+        <ToggleButton
+          handleClick={() => {
+            setIsAnnual((prev) => {
+              return !prev;
+            });
           }}
-        >
-          Quarterly
-        </button>
+          isAnnual={!isAnnual}
+          label="Quarterly"
+        />
       </div>
-      <CardHeader className="pt-6 pb-3">
-        <CardTitle className="text-center">{title}</CardTitle>
+      <CardHeader className="pt-3 pb-1 sm:pt-4 sm:pb-2 lg:pt-6 lg:pb-3">
+        <CardTitle className="text-center text-lg sm:text-xl lg:text-2xl">
+          {title}
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig}>
@@ -109,6 +112,7 @@ const BarGraph = ({
           >
             <CartesianGrid vertical={false} />
             <XAxis
+              className="text-[9px] sm:text-[10px] leading-none lg:text-xs"
               dataKey="year"
               tickLine={false}
               axisLine={false}
@@ -116,10 +120,13 @@ const BarGraph = ({
               tickFormatter={
                 isAnnual
                   ? (value) => value.slice(0, 4)
-                  : (value) => value.slice(0, 7)
+                  : (value) => value.slice(2, 7)
               }
             />
             <YAxis
+              tickLine={false}
+              width={30}
+              className="text-[9px] sm:text-[10px] leading-none lg:text-xs"
               axisLine={false}
               tickFormatter={(value) => {
                 return formatValue(value, isPercent);
@@ -180,6 +187,7 @@ const BarGraph = ({
             />
           </BarChart>
         </ChartContainer>
+        <DualRangeSliderCustomLabel values={values} setValues={setValues} />
       </CardContent>
     </Card>
   );

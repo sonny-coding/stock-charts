@@ -1,7 +1,7 @@
 "use client";
 import { useSearchParams, usePathname, useRouter } from "next/navigation";
 import { useDebouncedCallback } from "use-debounce";
-import { Input } from "./ui/input";
+import { Input } from "../ui/input";
 
 const Search = ({ placeholder }: { placeholder: string }) => {
   const pathname = usePathname();

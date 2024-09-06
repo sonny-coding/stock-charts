@@ -1,7 +1,7 @@
 "use client";
 
-import Search from "@/components/Search";
-import SearchResults from "@/components/SearchResults";
+import Search from "@/components/search/Search";
+import SearchResults from "@/components/search/SearchResults";
 
 const page = ({
   searchParams,

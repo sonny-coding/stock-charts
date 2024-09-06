@@ -1,8 +1,8 @@
 "use client";
 
-import BarGraph from "@/components/BarGraph";
-import LineBarComposedChart from "@/components/LineBarComposedChart";
-import LineGraph from "@/components/LineGraph";
+import BarGraph from "@/components/charts/BarGraph";
+import LineBarComposedChart from "@/components/charts/LineBarComposedChart";
+import LineGraph from "@/components/charts/LineGraph";
 import { aapl, aaplCashFlow } from "@/data";
 import {
   barLabelConfig,

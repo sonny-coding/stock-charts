@@ -1,17 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import { Button } from "./ui/button";
+import { Button } from "../ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
+  ComposedChart,
+  Line,
   Bar,
   XAxis,
   YAxis,
   CartesianGrid,
   Legend,
-  BarChart,
-  LineChart,
-  Line,
 } from "recharts";
 import {
   ChartConfig,
@@ -21,8 +20,9 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { aapl } from "@/data";
-import { formatValue } from "@/lib/utils";
-import { CustomizedLegend } from "./ui/CustomizedLegend";
+import { processOperatingExpenses, formatValue } from "@/lib/utils";
+import { CustomizedLegend } from "./CustomizedLegend";
+import ToggleButton from "./ToggleButton";
 
 export interface LabelConfig {
   [key: string]: {
@@ -32,27 +32,14 @@ export interface LabelConfig {
   };
 }
 
-interface BarGraphProps {
+interface LineBarComposedChartProps {
   // data: DataPoint[];
   labels: LabelConfig;
-  title: string;
-  processData: (data: any[]) => any[] | undefined;
-  unit?: string;
-  isPercent?: boolean;
-  apiData: {
-    symbol: string;
-    annualReports: any[];
-    quarterlyReports: any[];
-  };
+  // title: string;
+  // xAxisKey: string;
 }
 
-const LineGraph = ({
-  labels,
-  title,
-  processData,
-  isPercent,
-  apiData,
-}: BarGraphProps) => {
+const LineBarComposedChart = ({ labels }: LineBarComposedChartProps) => {
   const [isAnnual, setIsAnnual] = useState(true);
 
   // what the hell does record even do
@@ -76,40 +63,40 @@ const LineGraph = ({
     }));
   };
 
-  let processedData = processData(
-    isAnnual ? apiData.annualReports : apiData.quarterlyReports.slice(0, 15)
-  );
+  let processedData = isAnnual
+    ? processOperatingExpenses(aapl.annualReports)
+    : processOperatingExpenses(aapl.quarterlyReports.slice(0, 15));
 
   return (
     <Card className="w-full mx-auto">
-      <div className=" pt-2 flex items-center justify-center font-bold text-xs [&>*]:duration-200">
-        <button
-          className={`bg-slate-100 hover:opacity-60 py-2 px-3 border-b-2 ${
-            isAnnual ? "border-black" : "text-slate-500"
-          }`}
-          onClick={() => {
-            setIsAnnual(true);
+      <div className="flex items-center justify-center font-bold text-xs [&>*]:duration-300">
+        <ToggleButton
+          handleClick={() => {
+            setIsAnnual((prev) => {
+              return !prev;
+            });
           }}
-        >
-          Annual
-        </button>
-        <button
-          className={`bg-slate-100 hover:opacity-60 py-2 px-3 border-b-2 ${
-            !isAnnual ? "border-black" : "text-slate-500"
-          }`}
-          onClick={() => {
-            setIsAnnual(false);
+          isAnnual={isAnnual}
+          label="Annual"
+        />
+        <ToggleButton
+          handleClick={() => {
+            setIsAnnual((prev) => {
+              return !prev;
+            });
           }}
-        >
-          Quarterly
-        </button>
+          isAnnual={!isAnnual}
+          label="Quarterly"
+        />
       </div>
-      <CardHeader className="pt-6 pb-3">
-        <CardTitle className="text-center">{title}</CardTitle>
+      <CardHeader className="pt-3 pb-1 sm:pt-4 sm:pb-2 lg:pt-6 lg:pb-3">
+        <CardTitle className="text-lg sm:text-xl lg:text-2xl text-center">
+          Operating Expenses
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig}>
-          <LineChart
+          <ComposedChart
             accessibilityLayer
             data={processedData}
             margin={{
@@ -130,10 +117,16 @@ const LineGraph = ({
               }
             />
             <YAxis
+              tickLine={false}
+              width={30}
+              className="text-[9px] sm:text-[10px] leading-none lg:text-xs"
               axisLine={false}
-              tickFormatter={(value) => {
-                return formatValue(value, isPercent);
-              }}
+              tickFormatter={(value) =>
+                new Intl.NumberFormat("en-US", {
+                  notation: "compact",
+                  compactDisplay: "short",
+                }).format(value)
+              }
             />
             <ChartTooltip
               cursor={false}
@@ -155,7 +148,7 @@ const LineGraph = ({
                           name}
                         <div className="ml-auto flex items-baseline gap-0.5 font-mono font-medium tabular-nums text-foreground">
                           {typeof value === "number"
-                            ? formatValue(value, isPercent)
+                            ? formatValue(value)
                             : value}
                         </div>
                       </div>
@@ -165,21 +158,27 @@ const LineGraph = ({
               }
             />
 
-            {Object.entries(labels).map(
-              ([key, config]) =>
-                config.type === "line" && (
-                  <Line
-                    key={key}
-                    dataKey={key}
-                    type="monotone"
-                    stroke={config.color}
-                    strokeWidth={2}
-                    dot={false}
-                    hide={!visibleSeries[key]}
-                  />
-                )
+            {Object.entries(labels).map(([key, config]) =>
+              config.type === "line" ? (
+                <Line
+                  key={key}
+                  dataKey={key}
+                  dot={false}
+                  type="linear"
+                  stroke={config.color}
+                  strokeWidth={2}
+                  hide={!visibleSeries[key]}
+                />
+              ) : (
+                <Bar
+                  key={key}
+                  dataKey={key}
+                  fill={config.color}
+                  radius={4}
+                  hide={!visibleSeries[key]}
+                />
+              )
             )}
-
             <ChartLegend
               verticalAlign="top"
               content={
@@ -190,11 +189,11 @@ const LineGraph = ({
                 />
               }
             />
-          </LineChart>
+          </ComposedChart>
         </ChartContainer>
       </CardContent>
     </Card>
   );
 };
 
-export default LineGraph;
+export default LineBarComposedChart;

@@ -1,16 +1,17 @@
 "use client";
 
 import { useState } from "react";
-import { Button } from "./ui/button";
+import { Button } from "../ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
-  ComposedChart,
-  Line,
   Bar,
   XAxis,
   YAxis,
   CartesianGrid,
   Legend,
+  BarChart,
+  LineChart,
+  Line,
 } from "recharts";
 import {
   ChartConfig,
@@ -20,8 +21,9 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { aapl } from "@/data";
-import { processOperatingExpenses, formatValue } from "@/lib/utils";
-import { CustomizedLegend } from "./ui/CustomizedLegend";
+import { formatValue } from "@/lib/utils";
+import { CustomizedLegend } from "./CustomizedLegend";
+import ToggleButton from "./ToggleButton";
 
 export interface LabelConfig {
   [key: string]: {
@@ -31,14 +33,27 @@ export interface LabelConfig {
   };
 }
 
-interface LineBarComposedChartProps {
+interface BarGraphProps {
   // data: DataPoint[];
   labels: LabelConfig;
-  // title: string;
-  // xAxisKey: string;
+  title: string;
+  processData: (data: any[]) => any[] | undefined;
+  unit?: string;
+  isPercent?: boolean;
+  apiData: {
+    symbol: string;
+    annualReports: any[];
+    quarterlyReports: any[];
+  };
 }
 
-const LineBarComposedChart = ({ labels }: LineBarComposedChartProps) => {
+const LineGraph = ({
+  labels,
+  title,
+  processData,
+  isPercent,
+  apiData,
+}: BarGraphProps) => {
   const [isAnnual, setIsAnnual] = useState(true);
 
   // what the hell does record even do
@@ -62,40 +77,40 @@ const LineBarComposedChart = ({ labels }: LineBarComposedChartProps) => {
     }));
   };
 
-  let processedData = isAnnual
-    ? processOperatingExpenses(aapl.annualReports)
-    : processOperatingExpenses(aapl.quarterlyReports.slice(0, 15));
+  let processedData = processData(
+    isAnnual ? apiData.annualReports : apiData.quarterlyReports.slice(0, 15)
+  );
 
   return (
     <Card className="w-full mx-auto">
-      <div className="flex items-center justify-center font-bold text-xs [&>*]:duration-300">
-        <button
-          className={`bg-slate-100 hover:opacity-60 py-2 px-3 border-b-2 ${
-            isAnnual ? "border-black" : "text-slate-500"
-          }`}
-          onClick={() => {
-            setIsAnnual(true);
+      <div className="pt-2 flex items-center justify-center font-bold text-xs [&>*]:duration-200">
+        <ToggleButton
+          handleClick={() => {
+            setIsAnnual((prev) => {
+              return !prev;
+            });
           }}
-        >
-          Annual
-        </button>
-        <button
-          className={`bg-slate-100 hover:opacity-60 py-2 px-3 border-b-2 ${
-            !isAnnual ? "border-black" : "text-slate-500"
-          }`}
-          onClick={() => {
-            setIsAnnual(false);
+          isAnnual={isAnnual}
+          label="Annual"
+        />
+        <ToggleButton
+          handleClick={() => {
+            setIsAnnual((prev) => {
+              return !prev;
+            });
           }}
-        >
-          Quarterly
-        </button>
+          isAnnual={!isAnnual}
+          label="Quarterly"
+        />
       </div>
-      <CardHeader className="pt-6 pb-3">
-        <CardTitle className="text-center">Operating Expenses</CardTitle>
+      <CardHeader className="pt-3 pb-1 sm:pt-4 sm:pb-2 lg:pt-6 lg:pb-3">
+        <CardTitle className="text-lg sm:text-xl lg:text-2xl text-center">
+          {title}
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig}>
-          <ComposedChart
+          <LineChart
             accessibilityLayer
             data={processedData}
             margin={{
@@ -112,17 +127,17 @@ const LineBarComposedChart = ({ labels }: LineBarComposedChartProps) => {
               tickFormatter={
                 isAnnual
                   ? (value) => value.slice(0, 4)
-                  : (value) => value.slice(0, 7)
+                  : (value) => value.slice(2, 7)
               }
             />
             <YAxis
+              tickLine={false}
+              width={30}
+              className="text-[9px] sm:text-[10px] leading-none lg:text-xs"
               axisLine={false}
-              tickFormatter={(value) =>
-                new Intl.NumberFormat("en-US", {
-                  notation: "compact",
-                  compactDisplay: "short",
-                }).format(value)
-              }
+              tickFormatter={(value) => {
+                return formatValue(value, isPercent);
+              }}
             />
             <ChartTooltip
               cursor={false}
@@ -144,7 +159,7 @@ const LineBarComposedChart = ({ labels }: LineBarComposedChartProps) => {
                           name}
                         <div className="ml-auto flex items-baseline gap-0.5 font-mono font-medium tabular-nums text-foreground">
                           {typeof value === "number"
-                            ? formatValue(value)
+                            ? formatValue(value, isPercent)
                             : value}
                         </div>
                       </div>
@@ -154,27 +169,21 @@ const LineBarComposedChart = ({ labels }: LineBarComposedChartProps) => {
               }
             />
 
-            {Object.entries(labels).map(([key, config]) =>
-              config.type === "line" ? (
-                <Line
-                  key={key}
-                  dataKey={key}
-                  dot={false}
-                  type="linear"
-                  stroke={config.color}
-                  strokeWidth={2}
-                  hide={!visibleSeries[key]}
-                />
-              ) : (
-                <Bar
-                  key={key}
-                  dataKey={key}
-                  fill={config.color}
-                  radius={4}
-                  hide={!visibleSeries[key]}
-                />
-              )
+            {Object.entries(labels).map(
+              ([key, config]) =>
+                config.type === "line" && (
+                  <Line
+                    key={key}
+                    dataKey={key}
+                    type="monotone"
+                    stroke={config.color}
+                    strokeWidth={2}
+                    dot={false}
+                    hide={!visibleSeries[key]}
+                  />
+                )
             )}
+
             <ChartLegend
               verticalAlign="top"
               content={
@@ -185,11 +194,11 @@ const LineBarComposedChart = ({ labels }: LineBarComposedChartProps) => {
                 />
               }
             />
-          </ComposedChart>
+          </LineChart>
         </ChartContainer>
       </CardContent>
     </Card>
   );
 };
 
-export default LineBarComposedChart;
+export default LineGraph;

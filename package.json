@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@radix-ui/react-slider": "^1.2.0",
     "@radix-ui/react-slot": "^1.1.0",
     "@visx/axis": "^3.10.1",
     "@visx/curve": "file:visx/glyph@visx/mock-data@visx/pattern@visx/react-spring@visx/responsive@visx/xychart",

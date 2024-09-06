@@ -1,4 +1,4 @@
-import { ChartConfig } from "./chart";
+import { ChartConfig } from "../ui/chart";
 
 interface LegendPayload {
   value: string;
@@ -23,7 +23,7 @@ export const CustomizedLegend: React.FC<CustomizedLegendProps> = ({
 }) => {
   if (!payload) return null;
   return (
-    <ul className="flex justify-center space-x-4 mt-4 text-lg">
+    <ul className="flex justify-center space-x-4 mt-4 text-[10px] leading-none sm:text-sm lg:text-lg mb-5">
       {payload.map((entry, index) => (
         <div
           key={`item-${index}`}
@@ -33,7 +33,7 @@ export const CustomizedLegend: React.FC<CustomizedLegendProps> = ({
           onClick={() => onClick(entry.dataKey)}
         >
           <span
-            className="inline-block w-4 h-4 rounded-full"
+            className="inline-block w-2 h-2 lg:w-4 lg:h-4 rounded-full"
             style={{ backgroundColor: entry.color }}
           ></span>
           {chartConfig[entry.dataKey].label || entry.value}

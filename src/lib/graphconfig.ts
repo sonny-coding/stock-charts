@@ -1,4 +1,4 @@
-import { LabelConfig } from "@/components/BarGraph";
+import { LabelConfig } from "@/components/charts/BarGraph";
 
 export const growthLabelConfig: LabelConfig = {
   revenueGrowth: {

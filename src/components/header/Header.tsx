@@ -1,5 +1,5 @@
 import Link from "next/link";
-import HeaderTicker from "./header/HeaderTicker";
+import HeaderTicker from "./HeaderTicker";
 
 const Header = () => {
   const tickers = ["AAPL", "GOOGL", "AMZN", "MSFT", "TSLA"];
