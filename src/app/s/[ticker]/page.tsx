@@ -30,14 +30,14 @@ type PageProps = {
 
 export default function Page({ params: { ticker } }: PageProps) {
   return (
-    <div className="max-w-5xl mx-auto">
+    <div className="max-w-5xl mx-auto space-y-2 mt-2">
       <BarGraph
         labels={barLabelConfig}
         title={"Revenue & Earnings"}
         processData={processData}
         apiData={aapl}
       />
-      <BarGraph
+      <LineGraph
         labels={growthLabelConfig}
         title={"Growth"}
         processData={processGrowth}
@@ -47,7 +47,7 @@ export default function Page({ params: { ticker } }: PageProps) {
       <LineGraph
         processData={processMargins}
         labels={marginLabelConfig}
-        title="Margin"
+        title="Margins"
         isPercent={true}
         apiData={aapl}
       />

@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/footer/Footer";
+import { montserrat } from "@/app/ui/fonts";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -26,7 +27,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.className} antialiased w-full min-h-screen`}>
+      <body
+        className={`${montserrat.className} antialiased w-full min-h-screen`}
+      >
         <Header />
         {children}
         {/* <Footer /> */}

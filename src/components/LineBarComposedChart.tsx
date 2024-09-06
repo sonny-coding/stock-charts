@@ -67,126 +67,128 @@ const LineBarComposedChart = ({ labels }: LineBarComposedChartProps) => {
     : processOperatingExpenses(aapl.quarterlyReports.slice(0, 15));
 
   return (
-    <div>
-      <div className="flex items-center justify-center">
-        <Button
-          disabled={isAnnual}
-          onClick={() => setIsAnnual(true)}
-          size="lg"
-          variant="outline"
+    <Card className="w-full mx-auto">
+      <div className="flex items-center justify-center font-bold text-xs [&>*]:duration-300">
+        <button
+          className={`bg-slate-100 hover:opacity-60 py-2 px-3 border-b-2 ${
+            isAnnual ? "border-black" : "text-slate-500"
+          }`}
+          onClick={() => {
+            setIsAnnual(true);
+          }}
         >
           Annual
-        </Button>
-        <Button
-          onClick={() => setIsAnnual(false)}
-          disabled={!isAnnual}
-          size="lg"
-          variant="outline"
+        </button>
+        <button
+          className={`bg-slate-100 hover:opacity-60 py-2 px-3 border-b-2 ${
+            !isAnnual ? "border-black" : "text-slate-500"
+          }`}
+          onClick={() => {
+            setIsAnnual(false);
+          }}
         >
           Quarterly
-        </Button>
+        </button>
       </div>
-      <Card className="w-full mx-auto">
-        <CardHeader>
-          <CardTitle>Operating Expenses</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ChartContainer config={chartConfig}>
-            <ComposedChart
-              accessibilityLayer
-              data={processedData}
-              margin={{
-                left: 12,
-                right: 12,
-              }}
-            >
-              <CartesianGrid vertical={false} />
-              <XAxis
-                dataKey="year"
-                tickLine={false}
-                axisLine={false}
-                tickMargin={8}
-                tickFormatter={
-                  isAnnual
-                    ? (value) => value.slice(0, 4)
-                    : (value) => value.slice(0, 7)
-                }
-              />
-              <YAxis
-                axisLine={false}
-                tickFormatter={(value) =>
-                  new Intl.NumberFormat("en-US", {
-                    notation: "compact",
-                    compactDisplay: "short",
-                  }).format(value)
-                }
-              />
-              <ChartTooltip
-                cursor={false}
-                content={
-                  <ChartTooltipContent
-                    labelFormatter={(value) => value.slice(0, 4)}
-                    formatter={(value, name) => (
-                      <>
-                        <div
-                          className="h-2.5 w-1.5 shrink-0 rounded-[2px] bg-[--color-bg]"
-                          style={
-                            {
-                              "--color-bg": `var(--color-${name})`,
-                            } as React.CSSProperties
-                          }
-                        />
-                        <div className="flex min-w-[160px] items-center text-xs text-muted-foreground">
-                          {chartConfig[name as keyof typeof chartConfig]
-                            ?.label || name}
-                          <div className="ml-auto flex items-baseline gap-0.5 font-mono font-medium tabular-nums text-foreground">
-                            {typeof value === "number"
-                              ? formatValue(value)
-                              : value}
-                          </div>
+      <CardHeader className="pt-6 pb-3">
+        <CardTitle className="text-center">Operating Expenses</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <ChartContainer config={chartConfig}>
+          <ComposedChart
+            accessibilityLayer
+            data={processedData}
+            margin={{
+              left: 12,
+              right: 12,
+            }}
+          >
+            <CartesianGrid vertical={false} />
+            <XAxis
+              dataKey="year"
+              tickLine={false}
+              axisLine={false}
+              tickMargin={8}
+              tickFormatter={
+                isAnnual
+                  ? (value) => value.slice(0, 4)
+                  : (value) => value.slice(0, 7)
+              }
+            />
+            <YAxis
+              axisLine={false}
+              tickFormatter={(value) =>
+                new Intl.NumberFormat("en-US", {
+                  notation: "compact",
+                  compactDisplay: "short",
+                }).format(value)
+              }
+            />
+            <ChartTooltip
+              cursor={false}
+              content={
+                <ChartTooltipContent
+                  labelFormatter={(value) => value.slice(0, 4)}
+                  formatter={(value, name) => (
+                    <>
+                      <div
+                        className="h-2.5 w-1.5 shrink-0 rounded-[2px] bg-[--color-bg]"
+                        style={
+                          {
+                            "--color-bg": `var(--color-${name})`,
+                          } as React.CSSProperties
+                        }
+                      />
+                      <div className="flex min-w-[160px] items-center text-xs text-muted-foreground">
+                        {chartConfig[name as keyof typeof chartConfig]?.label ||
+                          name}
+                        <div className="ml-auto flex items-baseline gap-0.5 font-mono font-medium tabular-nums text-foreground">
+                          {typeof value === "number"
+                            ? formatValue(value)
+                            : value}
                         </div>
-                      </>
-                    )}
-                  />
-                }
-              />
+                      </div>
+                    </>
+                  )}
+                />
+              }
+            />
 
-              {Object.entries(labels).map(([key, config]) =>
-                config.type === "line" ? (
-                  <Line
-                    key={key}
-                    dataKey={key}
-                    dot={false}
-                    type="linear"
-                    stroke={config.color}
-                    strokeWidth={2}
-                    hide={!visibleSeries[key]}
-                  />
-                ) : (
-                  <Bar
-                    key={key}
-                    dataKey={key}
-                    fill={config.color}
-                    radius={4}
-                    hide={!visibleSeries[key]}
-                  />
-                )
-              )}
-              <ChartLegend
-                verticalAlign="top"
-                content={
-                  <CustomizedLegend
-                    onClick={handleLegendClick}
-                    visibleSeries={visibleSeries}
-                    chartConfig={chartConfig}
-                  />
-                }
-              />
-            </ComposedChart>
-          </ChartContainer>
-        </CardContent>
-      </Card>
-    </div>
+            {Object.entries(labels).map(([key, config]) =>
+              config.type === "line" ? (
+                <Line
+                  key={key}
+                  dataKey={key}
+                  dot={false}
+                  type="linear"
+                  stroke={config.color}
+                  strokeWidth={2}
+                  hide={!visibleSeries[key]}
+                />
+              ) : (
+                <Bar
+                  key={key}
+                  dataKey={key}
+                  fill={config.color}
+                  radius={4}
+                  hide={!visibleSeries[key]}
+                />
+              )
+            )}
+            <ChartLegend
+              verticalAlign="top"
+              content={
+                <CustomizedLegend
+                  onClick={handleLegendClick}
+                  visibleSeries={visibleSeries}
+                  chartConfig={chartConfig}
+                />
+              }
+            />
+          </ComposedChart>
+        </ChartContainer>
+      </CardContent>
+    </Card>
   );
 };
 

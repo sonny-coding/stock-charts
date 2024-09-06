@@ -72,25 +72,29 @@ const BarGraph = ({
 
   return (
     <Card className="w-full mx-auto">
-      <div className="flex items-center justify-center">
-        <Button
-          disabled={isAnnual}
-          onClick={() => setIsAnnual(true)}
-          size="sm"
-          variant="outline"
+      <div className="flex items-center justify-center font-bold text-xs [&>*]:duration-300">
+        <button
+          className={`bg-slate-100 hover:opacity-60 py-2 px-3 border-b-2 ${
+            isAnnual ? "border-black" : "text-slate-500"
+          }`}
+          onClick={() => {
+            setIsAnnual(true);
+          }}
         >
           Annual
-        </Button>
-        <Button
-          onClick={() => setIsAnnual(false)}
-          disabled={!isAnnual}
-          size="sm"
-          variant="outline"
+        </button>
+        <button
+          className={`bg-slate-100 hover:opacity-60 py-2 px-3 border-b-2 ${
+            !isAnnual ? "border-black" : "text-slate-500"
+          }`}
+          onClick={() => {
+            setIsAnnual(false);
+          }}
         >
           Quarterly
-        </Button>
+        </button>
       </div>
-      <CardHeader>
+      <CardHeader className="pt-6 pb-3">
         <CardTitle className="text-center">{title}</CardTitle>
       </CardHeader>
       <CardContent>

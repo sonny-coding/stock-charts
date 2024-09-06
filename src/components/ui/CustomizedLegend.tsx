@@ -23,7 +23,7 @@ export const CustomizedLegend: React.FC<CustomizedLegendProps> = ({
 }) => {
   if (!payload) return null;
   return (
-    <ul className="flex justify-center space-x-4 mt-4">
+    <ul className="flex justify-center space-x-4 mt-4 text-lg">
       {payload.map((entry, index) => (
         <div
           key={`item-${index}`}
@@ -33,7 +33,7 @@ export const CustomizedLegend: React.FC<CustomizedLegendProps> = ({
           onClick={() => onClick(entry.dataKey)}
         >
           <span
-            className="inline-block w-4 h-3"
+            className="inline-block w-4 h-4 rounded-full"
             style={{ backgroundColor: entry.color }}
           ></span>
           {chartConfig[entry.dataKey].label || entry.value}

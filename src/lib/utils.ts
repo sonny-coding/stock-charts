@@ -33,13 +33,6 @@ export interface IncomeData {
   netIncome: string;
 }
 
-interface GrowthRate {
-  year: string;
-  revenueGrowth: number;
-  operatingIncomeGrowth: number;
-  netIncomeGrowth: number;
-}
-
 export const processCostsOverRevenue = (data: IncomeData[]) => {
   return data
     .map((report) => {
@@ -106,18 +99,18 @@ export const processMargins = (data: IncomeData[]) => {
     .reverse();
 };
 
-export function processGrowth(data: IncomeData[]): GrowthRate[] {
+export function processGrowth(data: IncomeData[]) {
   // Sort the data by fiscal date, most recent first
   const sortedData = data.sort(
     (a, b) =>
       new Date(b.fiscalDateEnding).getTime() -
       new Date(a.fiscalDateEnding).getTime()
   );
-  const growthRates: GrowthRate[] = [];
+  const growthRates = [];
 
   for (let i = 0; i < sortedData.length - 1; i++) {
-    const currentYear = sortedData[i];
-    const previousYear = sortedData[i + 1];
+    const current = sortedData[i];
+    const previous = sortedData[i + 1];
 
     const calculateGrowth = (current: string, previous: string): number => {
       const currentValue = parseFloat(current);
@@ -128,19 +121,16 @@ export function processGrowth(data: IncomeData[]): GrowthRate[] {
     };
 
     growthRates.push({
-      year: currentYear.fiscalDateEnding,
+      year: current.fiscalDateEnding,
       revenueGrowth: calculateGrowth(
-        currentYear.totalRevenue,
-        previousYear.totalRevenue
+        current.totalRevenue,
+        previous.totalRevenue
       ),
-      operatingIncomeGrowth: calculateGrowth(
-        currentYear.operatingIncome,
-        previousYear.operatingIncome
+      operatingExpenses: calculateGrowth(
+        current.operatingExpenses,
+        previous.operatingExpenses
       ),
-      netIncomeGrowth: calculateGrowth(
-        currentYear.netIncome,
-        previousYear.netIncome
-      ),
+      netIncomeGrowth: calculateGrowth(current.netIncome, previous.netIncome),
     });
   }
 
@@ -168,7 +158,7 @@ export const processFCF = (data: any[]) => {
       return {
         year: report.fiscalDateEnding,
         operatingCashFlow: Number(report.operatingCashflow),
-        capitalExpenditure: Number(report.capitalExpenditures) * -1,
+        capitalExpenditure: Number(report.capitalExpenditures),
         fcf:
           parseInt(report.operatingCashflow) -
           parseInt(report.capitalExpenditures),

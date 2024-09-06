@@ -1,29 +1,7 @@
 "use client";
 
 import Search from "@/components/Search";
-import BarGraph from "@/components/BarGraph";
-import LineBarComposedChart from "@/components/LineBarComposedChart";
-import { LabelConfig } from "@/components/LineBarComposedChart";
-import {
-  processData,
-  processGrowth,
-  processMargins,
-  processCostsOverRevenue,
-  processFCF,
-  processCashFlow,
-} from "@/lib/utils";
-import LineGraph from "@/components/LineGraph";
 import SearchResults from "@/components/SearchResults";
-import { aapl, aaplCashFlow } from "@/data";
-import {
-  barLabelConfig,
-  cfLabelConfig,
-  composedLabelConfig,
-  costRatioLabelConfig,
-  fcfLabelConfig,
-  growthLabelConfig,
-  marginLabelConfig,
-} from "@/lib/graphconfig";
 
 const page = ({
   searchParams,
@@ -45,7 +23,6 @@ const page = ({
           <SearchResults query={query} />
         </div>
       </div>
-      {/* <Charts query={query} /> */}
     </main>
   );
 };

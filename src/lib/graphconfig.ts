@@ -4,12 +4,17 @@ export const growthLabelConfig: LabelConfig = {
   revenueGrowth: {
     label: "Revenue Growth",
     color: "hsl(var(--chart-1))",
-    type: "bar",
+    type: "line",
+  },
+  operatingExpenses: {
+    label: "OpEx Growth",
+    color: "hsl(var(--chart-2))",
+    type: "line",
   },
   netIncomeGrowth: {
     label: "Income Growth",
-    color: "hsl(var(--chart-2))",
-    type: "bar",
+    color: "hsl(var(--chart-3))",
+    type: "line",
   },
 };
 export const marginLabelConfig: LabelConfig = {
@@ -71,7 +76,7 @@ export const barLabelConfig: LabelConfig = {
     type: "bar",
   },
   grossProfit: {
-    label: `Gross Income`,
+    label: `Gross Profit`,
     color: "hsl(var(--chart-2))",
     type: "bar",
   },
