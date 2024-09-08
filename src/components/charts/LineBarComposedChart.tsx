@@ -23,6 +23,7 @@ import { tsla } from "@/data";
 import { processOperatingExpenses, formatValue } from "@/lib/utils";
 import { CustomizedLegend } from "./CustomizedLegend";
 import ToggleButton from "./ToggleButton";
+import DataDialog from "./DataDialog";
 
 export interface LabelConfig {
   [key: string]: {
@@ -74,24 +75,32 @@ const LineBarComposedChart = ({
   // processOperatingExpenses
   return (
     <Card className="w-full mx-auto">
-      <div className="flex items-center justify-center font-bold text-xs [&>*]:duration-300">
-        <ToggleButton
-          handleClick={() => {
-            setIsAnnual((prev) => {
-              return !prev;
-            });
-          }}
-          isAnnual={isAnnual}
-          label="Annual"
-        />
-        <ToggleButton
-          handleClick={() => {
-            setIsAnnual((prev) => {
-              return !prev;
-            });
-          }}
-          isAnnual={!isAnnual}
-          label="Quarterly"
+      <div className="pt-2 flex gap-2 items-center justify-center font-bold [&>*]:duration-300">
+        <div>
+          <ToggleButton
+            handleClick={() => {
+              setIsAnnual((prev) => {
+                return !prev;
+              });
+            }}
+            isAnnual={isAnnual}
+            label="Annual"
+          />
+          <ToggleButton
+            handleClick={() => {
+              setIsAnnual((prev) => {
+                return !prev;
+              });
+            }}
+            isAnnual={!isAnnual}
+            label="Quarterly"
+          />
+        </div>
+        <DataDialog
+          data={isAnnual ? annualData : quarterlyData}
+          title={title}
+          labels={labels}
+          isPercent={isPercent}
         />
       </div>
       <CardHeader className="pt-3 pb-1 sm:pt-4 sm:pb-2 lg:pt-6 lg:pb-3">

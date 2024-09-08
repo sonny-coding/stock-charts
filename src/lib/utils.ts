@@ -70,21 +70,6 @@ export const processData = (data: any[]) => {
         grossProfit: Number(report.grossProfit),
         operatingIncome: Number(report.operatingIncome),
         netIncome: Number(report.netIncome),
-        grossMargin: Number(
-          (
-            parseFloat(report.grossProfit) / parseFloat(report.totalRevenue)
-          ).toFixed(4)
-        ),
-        operatingMargin: Number(
-          (
-            parseFloat(report.operatingIncome) / parseFloat(report.totalRevenue)
-          ).toFixed(4)
-        ),
-        netMargin: Number(
-          (
-            parseFloat(report.netIncome) / parseFloat(report.totalRevenue)
-          ).toFixed(4)
-        ),
       };
     })
     .reverse();

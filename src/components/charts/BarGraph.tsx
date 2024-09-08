@@ -13,8 +13,7 @@ import {
 import { formatValue } from "@/lib/utils";
 import { CustomizedLegend } from "./CustomizedLegend";
 import ToggleButton from "./ToggleButton";
-import DualRangeSliderCustomLabel from "./DualRangeSliderCustom";
-import { processData } from "@/lib/utils";
+import DataDialog from "./DataDialog";
 
 export interface LabelConfig {
   [key: string]: {
@@ -66,26 +65,35 @@ const BarGraph = ({
 
   return (
     <Card className="w-full mx-auto">
-      <div className="pt-2 flex items-center justify-center font-bold [&>*]:duration-300">
-        <ToggleButton
-          handleClick={() => {
-            setIsAnnual((prev) => {
-              return !prev;
-            });
-          }}
-          isAnnual={isAnnual}
-          label="Annual"
-        />
-        <ToggleButton
-          handleClick={() => {
-            setIsAnnual((prev) => {
-              return !prev;
-            });
-          }}
-          isAnnual={!isAnnual}
-          label="Quarterly"
+      <div className="pt-2 flex gap-2 items-center justify-center font-bold [&>*]:duration-300">
+        <div>
+          <ToggleButton
+            handleClick={() => {
+              setIsAnnual((prev) => {
+                return !prev;
+              });
+            }}
+            isAnnual={isAnnual}
+            label="Annual"
+          />
+          <ToggleButton
+            handleClick={() => {
+              setIsAnnual((prev) => {
+                return !prev;
+              });
+            }}
+            isAnnual={!isAnnual}
+            label="Quarterly"
+          />
+        </div>
+        <DataDialog
+          data={isAnnual ? annualData : quarterlyData}
+          title={title}
+          labels={labels}
+          isPercent={isPercent}
         />
       </div>
+
       <CardHeader className="pt-3 pb-1 sm:pt-4 sm:pb-2 lg:pt-6 lg:pb-3">
         <CardTitle className="text-center text-lg sm:text-xl lg:text-2xl">
           {title}

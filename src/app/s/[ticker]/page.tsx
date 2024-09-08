@@ -21,8 +21,6 @@ import {
   processCashFlow,
   processOperatingExpenses,
 } from "@/lib/utils";
-import Pokemon from "./Pokemon";
-import { Suspense } from "react";
 
 type PageProps = {
   params: {
