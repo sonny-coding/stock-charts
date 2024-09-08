@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { Button } from "../ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Bar,
@@ -20,7 +19,6 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import { aapl } from "@/data";
 import { formatValue } from "@/lib/utils";
 import { CustomizedLegend } from "./CustomizedLegend";
 import ToggleButton from "./ToggleButton";
@@ -34,25 +32,20 @@ export interface LabelConfig {
 }
 
 interface BarGraphProps {
-  // data: DataPoint[];
   labels: LabelConfig;
   title: string;
-  processData: (data: any[]) => any[] | undefined;
   unit?: string;
   isPercent?: boolean;
-  apiData: {
-    symbol: string;
-    annualReports: any[];
-    quarterlyReports: any[];
-  };
+  annualData: any[];
+  quarterlyData: any[];
 }
 
 const LineGraph = ({
   labels,
   title,
-  processData,
   isPercent,
-  apiData,
+  annualData,
+  quarterlyData,
 }: BarGraphProps) => {
   const [isAnnual, setIsAnnual] = useState(true);
 
@@ -76,10 +69,6 @@ const LineGraph = ({
       [dataKey]: !prev[dataKey as keyof typeof visibleSeries],
     }));
   };
-
-  let processedData = processData(
-    isAnnual ? apiData.annualReports : apiData.quarterlyReports.slice(0, 15)
-  );
 
   return (
     <Card className="w-full mx-auto">
@@ -112,7 +101,7 @@ const LineGraph = ({
         <ChartContainer config={chartConfig}>
           <LineChart
             accessibilityLayer
-            data={processedData}
+            data={isAnnual ? annualData : quarterlyData}
             margin={{
               left: 12,
               right: 12,

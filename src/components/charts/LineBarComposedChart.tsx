@@ -19,7 +19,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import { aapl } from "@/data";
+import { tsla } from "@/data";
 import { processOperatingExpenses, formatValue } from "@/lib/utils";
 import { CustomizedLegend } from "./CustomizedLegend";
 import ToggleButton from "./ToggleButton";
@@ -33,13 +33,21 @@ export interface LabelConfig {
 }
 
 interface LineBarComposedChartProps {
-  // data: DataPoint[];
   labels: LabelConfig;
-  // title: string;
-  // xAxisKey: string;
+  title: string;
+  unit?: string;
+  isPercent?: boolean;
+  annualData: any[];
+  quarterlyData: any[];
 }
 
-const LineBarComposedChart = ({ labels }: LineBarComposedChartProps) => {
+const LineBarComposedChart = ({
+  labels,
+  title,
+  isPercent,
+  annualData,
+  quarterlyData,
+}: LineBarComposedChartProps) => {
   const [isAnnual, setIsAnnual] = useState(true);
 
   // what the hell does record even do
@@ -63,10 +71,7 @@ const LineBarComposedChart = ({ labels }: LineBarComposedChartProps) => {
     }));
   };
 
-  let processedData = isAnnual
-    ? processOperatingExpenses(aapl.annualReports)
-    : processOperatingExpenses(aapl.quarterlyReports.slice(0, 15));
-
+  // processOperatingExpenses
   return (
     <Card className="w-full mx-auto">
       <div className="flex items-center justify-center font-bold text-xs [&>*]:duration-300">
@@ -91,14 +96,15 @@ const LineBarComposedChart = ({ labels }: LineBarComposedChartProps) => {
       </div>
       <CardHeader className="pt-3 pb-1 sm:pt-4 sm:pb-2 lg:pt-6 lg:pb-3">
         <CardTitle className="text-lg sm:text-xl lg:text-2xl text-center">
-          Operating Expenses
+          {title}
+          {/* Operating Expenses */}
         </CardTitle>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig}>
           <ComposedChart
             accessibilityLayer
-            data={processedData}
+            data={isAnnual ? annualData : quarterlyData}
             margin={{
               left: 12,
               right: 12,
@@ -121,12 +127,9 @@ const LineBarComposedChart = ({ labels }: LineBarComposedChartProps) => {
               width={30}
               className="text-[9px] sm:text-[10px] leading-none lg:text-xs"
               axisLine={false}
-              tickFormatter={(value) =>
-                new Intl.NumberFormat("en-US", {
-                  notation: "compact",
-                  compactDisplay: "short",
-                }).format(value)
-              }
+              tickFormatter={(value) => {
+                return formatValue(value, isPercent);
+              }}
             />
             <ChartTooltip
               cursor={false}

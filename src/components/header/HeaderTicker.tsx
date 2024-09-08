@@ -23,7 +23,7 @@ const HeaderTicker = ({ tickers }: HeaderTickerProps) => {
     replace(`${pathname}?${params.toString()}`);
   };
   return (
-    <ul className="flex gap-5">
+    <ul className="flex gap-5 text-foreground">
       {tickers.map((ticker) => (
         <Link
           href={`/s/${ticker}`}

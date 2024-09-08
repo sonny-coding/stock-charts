@@ -33,7 +33,7 @@ export interface IncomeData {
   netIncome: string;
 }
 
-export const processCostsOverRevenue = (data: IncomeData[]) => {
+export const processCostsOverRevenue = (data: any[]) => {
   return data
     .map((report) => {
       return {
@@ -61,7 +61,7 @@ export const processCostsOverRevenue = (data: IncomeData[]) => {
     .reverse();
 };
 
-export const processData = (data: IncomeData[]) => {
+export const processData = (data: any[]) => {
   return data
     .map((report) => {
       return {
@@ -70,10 +70,64 @@ export const processData = (data: IncomeData[]) => {
         grossProfit: Number(report.grossProfit),
         operatingIncome: Number(report.operatingIncome),
         netIncome: Number(report.netIncome),
+        grossMargin: Number(
+          (
+            parseFloat(report.grossProfit) / parseFloat(report.totalRevenue)
+          ).toFixed(4)
+        ),
+        operatingMargin: Number(
+          (
+            parseFloat(report.operatingIncome) / parseFloat(report.totalRevenue)
+          ).toFixed(4)
+        ),
+        netMargin: Number(
+          (
+            parseFloat(report.netIncome) / parseFloat(report.totalRevenue)
+          ).toFixed(4)
+        ),
       };
     })
     .reverse();
 };
+
+export function processGrowth(data: any[]) {
+  // Sort the data by fiscal date, most recent first
+  const sortedData = data.sort(
+    (a, b) =>
+      new Date(b.fiscalDateEnding).getTime() -
+      new Date(a.fiscalDateEnding).getTime()
+  );
+  const growthRates = [];
+
+  for (let i = 0; i < sortedData.length - 1; i++) {
+    const current = sortedData[i];
+    const previous = sortedData[i + 1];
+
+    const calculateGrowth = (current: string, previous: string): number => {
+      const currentValue = parseFloat(current);
+      const previousValue = parseFloat(previous);
+      const growth = (currentValue - previousValue) / previousValue;
+      if (growth < 0) {
+        return Number(growth * -1);
+      } else return Number(growth);
+    };
+
+    growthRates.push({
+      year: current.fiscalDateEnding,
+      revenueGrowth: calculateGrowth(
+        current.totalRevenue,
+        previous.totalRevenue
+      ),
+      operatingExpenses: calculateGrowth(
+        current.operatingExpenses,
+        previous.operatingExpenses
+      ),
+      netIncomeGrowth: calculateGrowth(current.netIncome, previous.netIncome),
+    });
+  }
+
+  return growthRates.reverse();
+}
 export const processMargins = (data: IncomeData[]) => {
   return data
     .map(
@@ -98,44 +152,6 @@ export const processMargins = (data: IncomeData[]) => {
     )
     .reverse();
 };
-
-export function processGrowth(data: IncomeData[]) {
-  // Sort the data by fiscal date, most recent first
-  const sortedData = data.sort(
-    (a, b) =>
-      new Date(b.fiscalDateEnding).getTime() -
-      new Date(a.fiscalDateEnding).getTime()
-  );
-  const growthRates = [];
-
-  for (let i = 0; i < sortedData.length - 1; i++) {
-    const current = sortedData[i];
-    const previous = sortedData[i + 1];
-
-    const calculateGrowth = (current: string, previous: string): number => {
-      const currentValue = parseFloat(current);
-      const previousValue = parseFloat(previous);
-      return Number(
-        ((currentValue - previousValue) / previousValue).toFixed(4)
-      );
-    };
-
-    growthRates.push({
-      year: current.fiscalDateEnding,
-      revenueGrowth: calculateGrowth(
-        current.totalRevenue,
-        previous.totalRevenue
-      ),
-      operatingExpenses: calculateGrowth(
-        current.operatingExpenses,
-        previous.operatingExpenses
-      ),
-      netIncomeGrowth: calculateGrowth(current.netIncome, previous.netIncome),
-    });
-  }
-
-  return growthRates.reverse();
-}
 
 export const processOperatingExpenses = (data: IncomeData[]) => {
   return data

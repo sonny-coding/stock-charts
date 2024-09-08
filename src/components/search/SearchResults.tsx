@@ -28,10 +28,16 @@ const SearchResults = ({ query }: { query: string }) => {
             {results.map((result) => (
               <Link
                 href={`/s/${result.symbol}`}
-                key={result.symbol}
-                className="bg-muted hover:bg-cyan-50 p-2 rounded flex justify-between items-center cursor-pointer"
+                className="block bg-white hover:bg-gray-50 p-3 rounded-lg shadow-sm transition-all duration-200 ease-in-out transform hover:scale-102 hover:shadow-md"
               >
-                {result.name} ({result.symbol})
+                <div className="flex justify-between items-center">
+                  <span className="font-medium text-gray-800">
+                    {result.name}
+                  </span>
+                  <span className="text-[#e76e50] font-semibold">
+                    {result.symbol}
+                  </span>
+                </div>
               </Link>
             ))}
           </ul>

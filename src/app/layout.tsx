@@ -27,12 +27,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${montserrat.className} antialiased w-full min-h-screen`}
-      >
-        <Header />
-        {children}
-        {/* <Footer /> */}
+      <body className={`${montserrat.className} antialiased`}>
+        <div className="flex flex-col min-h-screen">
+          <Header />
+          <main className="flex-grow py-2">{children}</main>
+          <Footer />
+        </div>
       </body>
     </html>
   );

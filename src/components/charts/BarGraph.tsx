@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { Button } from "../ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Bar, XAxis, YAxis, CartesianGrid, Legend, BarChart } from "recharts";
 import {
@@ -15,6 +14,7 @@ import { formatValue } from "@/lib/utils";
 import { CustomizedLegend } from "./CustomizedLegend";
 import ToggleButton from "./ToggleButton";
 import DualRangeSliderCustomLabel from "./DualRangeSliderCustom";
+import { processData } from "@/lib/utils";
 
 export interface LabelConfig {
   [key: string]: {
@@ -25,28 +25,23 @@ export interface LabelConfig {
 }
 
 interface BarChartProps {
-  // data: DataPoint[];
   labels: LabelConfig;
   title: string;
-  processData: (data: any[]) => any[] | undefined;
   unit?: string;
   isPercent?: boolean;
-  apiData: {
-    symbol: string;
-    annualReports: any[];
-    quarterlyReports: any[];
-  };
+  annualData: any[];
+  quarterlyData: any[];
 }
 
 const BarGraph = ({
   labels,
   title,
-  processData,
   isPercent,
-  apiData,
+  annualData,
+  quarterlyData,
 }: BarChartProps) => {
   const [isAnnual, setIsAnnual] = useState(true);
-  const [values, setValues] = useState([0, 10]);
+  // const [values, setValues] = useState([0, 10]);
 
   // what the hell does record even do
   const [visibleSeries, setVisibleSeries] = useState<Record<string, boolean>>(
@@ -68,10 +63,6 @@ const BarGraph = ({
       [dataKey]: !prev[dataKey as keyof typeof visibleSeries],
     }));
   };
-
-  let processedData = processData(
-    isAnnual ? apiData.annualReports : apiData.quarterlyReports.slice(0, 15)
-  );
 
   return (
     <Card className="w-full mx-auto">
@@ -104,7 +95,7 @@ const BarGraph = ({
         <ChartContainer config={chartConfig}>
           <BarChart
             accessibilityLayer
-            data={processedData}
+            data={isAnnual ? annualData : quarterlyData}
             margin={{
               left: 12,
               right: 12,
@@ -187,7 +178,6 @@ const BarGraph = ({
             />
           </BarChart>
         </ChartContainer>
-        <DualRangeSliderCustomLabel values={values} setValues={setValues} />
       </CardContent>
     </Card>
   );

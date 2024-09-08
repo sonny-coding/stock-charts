@@ -2,6 +2,7 @@
 import { useSearchParams, usePathname, useRouter } from "next/navigation";
 import { useDebouncedCallback } from "use-debounce";
 import { Input } from "../ui/input";
+import { SearchIcon } from "lucide-react";
 
 const Search = ({ placeholder }: { placeholder: string }) => {
   const pathname = usePathname();
@@ -21,7 +22,7 @@ const Search = ({ placeholder }: { placeholder: string }) => {
   return (
     <Input
       type="text"
-      className="flex-grow focus-visible:ring-0"
+      className="shadow-md border-none ring-none focus-visible:ring-0 text-lg bg-gray-50"
       placeholder={placeholder}
       onChange={(e) => {
         handleSearch(e.target.value);

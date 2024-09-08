@@ -1,5 +1,6 @@
 "use client";
 
+import DialogDemo from "@/components/header/SearchDialog";
 import Search from "@/components/search/Search";
 import SearchResults from "@/components/search/SearchResults";
 
@@ -15,12 +16,13 @@ const page = ({
   return (
     <main className="flex-grow container mx-auto px-4 py-8 max-h-screen">
       <div className="max-w-2xl mx-auto">
-        <h2 className="text-3xl font-bold text-center mb-8">
-          Search for Stock Tickers
-        </h2>
+        <p className="text-3xl font-bold text-center mb-8">
+          Visialize <span className="text-[#e76e50]">Fundamentals</span>
+        </p>
         <div className="flex flex-col items-center space-x-2">
-          <Search placeholder="Enter stock ticker..." />
+          <Search placeholder="Search..." />
           <SearchResults query={query} />
+          {/* <DialogDemo query={query} /> */}
         </div>
       </div>
     </main>

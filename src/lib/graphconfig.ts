@@ -94,7 +94,7 @@ export const barLabelConfig: LabelConfig = {
 // CASH FLOW CONFIGS
 export const fcfLabelConfig: LabelConfig = {
   operatingCashFlow: {
-    label: "Operating Cash Flow",
+    label: "OCF",
     color: "hsl(var(--chart-1))",
     type: "bar",
   },
@@ -104,14 +104,14 @@ export const fcfLabelConfig: LabelConfig = {
     type: "bar",
   },
   fcf: {
-    label: "Free Cash Flow",
+    label: "FCF",
     color: "hsl(var(--chart-3))",
     type: "bar",
   },
 };
 export const cfLabelConfig: LabelConfig = {
   operatingCashFlow: {
-    label: "Operating Cash Flow",
+    label: "OCF",
     color: "hsl(var(--chart-1))",
     type: "line",
   },
