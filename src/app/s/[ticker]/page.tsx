@@ -43,27 +43,14 @@ const searchTicker = async (ticker: string, apiKey: string) => {
     return data;
   } catch (error) {
     console.error("Error:", error);
-    // Handle the error here, maybe throw it further or display a user message
   }
 };
 
-// const fetchPokemon = async (id: string) => {
-//   console.log("Fetching data");
-//   await new Promise((resolve) => {
-//     setTimeout(resolve, 4000);
-//   });
-//   const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
-//   const data = await res.json();
-//   console.log("deta fetched completed after 3 seconds");
-//   return data;
-// };
-
-// maybe extract ticker using useParams ?? since this is a client component
 export default async function Page({
   params: { ticker },
   searchParams,
 }: PageProps) {
-  // const apiData = await searchTicker("AMD", "PPKPXKM833IA91DE");
+  // const apiData = await searchTicker("SBUX", process.env.ALPHA_VANTAGE_KEY);
   const maxQuarterLength = Math.min(tsla.quarterlyReports.length, 15);
   return (
     <div className="max-w-5xl mx-auto space-y-2 mt-2">
@@ -114,8 +101,6 @@ export default async function Page({
           maxQuarterLength * -1
         )}
         title="Operating Expenses"
-        // apiData={tsla}
-        // processData={processOperatingExpenses}
       />
       <BarGraph
         labels={fcfLabelConfig}
@@ -125,7 +110,6 @@ export default async function Page({
         quarterlyData={processFCF(tslaCashFlow.quarterlyReports).slice(
           maxQuarterLength * -1
         )}
-        // apiData={tslaCashFlow}
       />
       <LineGraph
         labels={cfLabelConfig}
@@ -135,7 +119,6 @@ export default async function Page({
           maxQuarterLength * -1
         )}
         title="Cash Flow Breakdown"
-        // apiData={tslaCashFlow}
       />
     </div>
   );

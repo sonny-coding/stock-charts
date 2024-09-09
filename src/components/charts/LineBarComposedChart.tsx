@@ -113,7 +113,11 @@ const LineBarComposedChart = ({
           label="Quarterly"
         />
         <DataDialog
-          data={isAnnual ? annualData : quarterlyData}
+          data={
+            isAnnual
+              ? annualData.slice().reverse()
+              : quarterlyData.slice().reverse()
+          }
           title={title}
           labels={labels}
           isPercent={isPercent}

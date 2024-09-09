@@ -36,25 +36,28 @@ export interface IncomeData {
 export const processCostsOverRevenue = (data: any[]) => {
   return data
     .map((report) => {
+      const calculateRatio = (numerator: string, denominator: string) => {
+        const num = parseFloat(numerator);
+        const den = parseFloat(denominator);
+        if (isNaN(num) || isNaN(den) || den === 0) {
+          return 0;
+        }
+        return Number((num / den).toFixed(4));
+      };
+
       return {
         year: report.fiscalDateEnding,
-        cogsRatio: Number(
-          (
-            parseFloat(report.costofGoodsAndServicesSold) /
-            parseFloat(report.totalRevenue)
-          ).toFixed(4)
+        cogsRatio: calculateRatio(
+          report.costofGoodsAndServicesSold,
+          report.totalRevenue
         ),
-        rndRatio: Number(
-          (
-            parseFloat(report.researchAndDevelopment) /
-            parseFloat(report.totalRevenue)
-          ).toFixed(4)
+        rndRatio: calculateRatio(
+          report.researchAndDevelopment,
+          report.totalRevenue
         ),
-        sgaRatio: Number(
-          (
-            parseFloat(report.sellingGeneralAndAdministrative) /
-            parseFloat(report.totalRevenue)
-          ).toFixed(4)
+        sgaRatio: calculateRatio(
+          report.sellingGeneralAndAdministrative,
+          report.totalRevenue
         ),
       };
     })
@@ -143,11 +146,17 @@ export const processOperatingExpenses = (data: IncomeData[]) => {
     .map((report: IncomeData) => {
       return {
         year: report.fiscalDateEnding,
-        operatingExpenses: Number(report.operatingExpenses),
-        sellingGeneralAndAdministrative: Number(
-          report.sellingGeneralAndAdministrative
-        ),
-        researchAndDevelopment: Number(report.researchAndDevelopment),
+        operatingExpenses: isNaN(Number(report.operatingExpenses))
+          ? 0
+          : Number(report.operatingExpenses),
+        sellingGeneralAndAdministrative: isNaN(
+          Number(report.sellingGeneralAndAdministrative)
+        )
+          ? 0
+          : Number(report.sellingGeneralAndAdministrative),
+        researchAndDevelopment: isNaN(Number(report.researchAndDevelopment))
+          ? 0
+          : Number(report.researchAndDevelopment),
       };
     })
     .reverse();
