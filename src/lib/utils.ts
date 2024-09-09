@@ -180,7 +180,11 @@ export const processCashFlow = (data: any[]) => {
     })
     .reverse();
 };
-export const formatValue = (value: number, isPercent: boolean = false) => {
+export const formatValue = (
+  value: number,
+  isPercent: boolean = false,
+  isMillion: boolean = false
+) => {
   if (typeof value !== "number") {
     return value;
   }
@@ -190,6 +194,14 @@ export const formatValue = (value: number, isPercent: boolean = false) => {
       style: "percent",
       maximumFractionDigits: 2,
     }).format(value);
+  } else if (isMillion) {
+    // For millions, divide by 1,000,000 and add "M" to the formatted value
+    const millions = value / 1000000;
+    return (
+      new Intl.NumberFormat("en-US", {
+        maximumFractionDigits: 2,
+      }).format(millions) + "M"
+    );
   } else {
     return new Intl.NumberFormat("en-US", {
       notation: "compact",

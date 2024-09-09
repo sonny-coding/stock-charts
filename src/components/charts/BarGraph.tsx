@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Bar, XAxis, YAxis, CartesianGrid, Legend, BarChart } from "recharts";
 import {
@@ -10,10 +10,12 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
+import { Camera } from "lucide-react";
 import { formatValue } from "@/lib/utils";
 import { CustomizedLegend } from "./CustomizedLegend";
 import ToggleButton from "./ToggleButton";
 import DataDialog from "./DataDialog";
+import html2canvas from "html2canvas";
 
 export interface LabelConfig {
   [key: string]: {
@@ -39,6 +41,7 @@ const BarGraph = ({
   annualData,
   quarterlyData,
 }: BarChartProps) => {
+  const targetRef = useRef(null);
   const [isAnnual, setIsAnnual] = useState(true);
   // const [values, setValues] = useState([0, 10]);
 
@@ -63,35 +66,60 @@ const BarGraph = ({
     }));
   };
 
+  const captureScreenshot = async () => {
+    if (targetRef.current) {
+      try {
+        const canvas = await html2canvas(targetRef.current);
+        const image = canvas.toDataURL("image/png");
+        const link = document.createElement("a");
+        link.href = image;
+        link.download = "screenshot.png";
+        link.click();
+      } catch (error) {
+        console.error("Failed to capture screenshot:", error);
+        alert("Failed to capture screenshot. Please try again.");
+      }
+    }
+  };
+
   return (
-    <Card className="w-full mx-auto">
-      <div className="pt-2 flex gap-2 items-center justify-center font-bold [&>*]:duration-300">
-        <div>
-          <ToggleButton
-            handleClick={() => {
-              setIsAnnual((prev) => {
-                return !prev;
-              });
-            }}
-            isAnnual={isAnnual}
-            label="Annual"
-          />
-          <ToggleButton
-            handleClick={() => {
-              setIsAnnual((prev) => {
-                return !prev;
-              });
-            }}
-            isAnnual={!isAnnual}
-            label="Quarterly"
-          />
-        </div>
+    <Card ref={targetRef} className="w-full mx-auto">
+      <div className="pt-2 flex gap-1 items-center justify-center font-bold [&>*]:duration-300">
+        <ToggleButton
+          handleClick={() => {
+            setIsAnnual((prev) => {
+              return !prev;
+            });
+          }}
+          isAnnual={isAnnual}
+          label="Annual"
+        />
+        <ToggleButton
+          handleClick={() => {
+            setIsAnnual((prev) => {
+              return !prev;
+            });
+          }}
+          isAnnual={!isAnnual}
+          label="Quarterly"
+        />
+
         <DataDialog
-          data={isAnnual ? annualData : quarterlyData}
+          data={
+            isAnnual
+              ? annualData.slice().reverse()
+              : quarterlyData.slice().reverse()
+          }
           title={title}
           labels={labels}
           isPercent={isPercent}
         />
+        <button
+          onClick={captureScreenshot}
+          className="flex items-center bg-secondary text-[10px] leading-none lg:text-xs hover:opacity-60 py-1 px-2 lg:py-2 lg:px-3 text-slate-500 border-b-2"
+        >
+          <Camera className="w-4 h-4" />
+        </button>
       </div>
 
       <CardHeader className="pt-3 pb-1 sm:pt-4 sm:pb-2 lg:pt-6 lg:pb-3">

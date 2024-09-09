@@ -36,7 +36,7 @@ export const DataTable = ({ data, labels, isPercent }: DataTableProps) => {
             {keys.map((key) => {
               return (
                 <TableCell key={key}>
-                  {formatValue(each[key], isPercent)}
+                  {formatValue(each[key], isPercent, true)}
                 </TableCell>
               );
             })}
