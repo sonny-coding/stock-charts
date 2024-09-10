@@ -54,7 +54,7 @@ const signUp = async (formData: FormData) => {
     // The Road to Next
   }
 
-  redirect("/dashboard");
+  redirect("/s/AAPL");
 };
 
 export { signUp };

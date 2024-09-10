@@ -27,6 +27,7 @@ const SearchResults = ({ query }: { query: string }) => {
           <ul className="space-y-2">
             {results.map((result) => (
               <Link
+                key={result.symbol}
                 href={`/s/${result.symbol}`}
                 className="block bg-white hover:bg-gray-50 p-3 rounded-lg shadow-sm transition-all duration-200 ease-in-out transform hover:scale-102 hover:shadow-md"
               >

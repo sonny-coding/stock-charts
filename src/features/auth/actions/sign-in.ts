@@ -51,7 +51,7 @@ const signIn = async (formData: FormData) => {
     // https://www.robinwieruch.de/next-forms/
   }
 
-  redirect("/dashboard");
+  redirect("/s/AAPL");
 };
 
 export { signIn };
