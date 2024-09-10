@@ -51,20 +51,20 @@ export default async function Page({
   params: { ticker },
   searchParams,
 }: PageProps) {
-  const apiData = await searchTicker(
-    ticker,
-    process.env.ALPHA_VANTAGE_KEY as string
-  );
-  const maxQuarterLength = Math.min(apiData.quarterlyReports.length, 15);
+  // const apiData = await searchTicker(
+  //   ticker,
+  //   process.env.ALPHA_VANTAGE_KEY as string
+  // );
+  const maxQuarterLength = Math.min(tsla.quarterlyReports.length, 15);
   return (
     <div className="max-w-5xl mx-auto space-y-2 mt-2">
       <Banner ticker={ticker} />
       <BarGraph
         labels={barLabelConfig}
         title={"Revenue & Earnings"}
-        annualData={processData(apiData.annualReports)}
+        annualData={processData(tsla.annualReports)}
         quarterlyData={processData(
-          apiData.quarterlyReports.slice(0, maxQuarterLength)
+          tsla.quarterlyReports.slice(0, maxQuarterLength)
         )}
       />
 
@@ -72,16 +72,16 @@ export default async function Page({
         labels={marginLabelConfig}
         title="Margins"
         isPercent={true}
-        annualData={processMargins(apiData.annualReports)}
+        annualData={processMargins(tsla.annualReports)}
         quarterlyData={processMargins(
-          apiData.quarterlyReports.slice(0, maxQuarterLength)
+          tsla.quarterlyReports.slice(0, maxQuarterLength)
         )}
       />
       <LineGraph
         labels={growthLabelConfig}
         title={"Growth"}
-        annualData={processGrowth(apiData.annualReports)}
-        quarterlyData={processGrowth(apiData.quarterlyReports).slice(
+        annualData={processGrowth(tsla.annualReports)}
+        quarterlyData={processGrowth(tsla.quarterlyReports).slice(
           0,
           maxQuarterLength
         )}
@@ -89,8 +89,8 @@ export default async function Page({
       />
 
       <LineGraph
-        annualData={processCostsOverRevenue(apiData.annualReports)}
-        quarterlyData={processCostsOverRevenue(apiData.quarterlyReports).slice(
+        annualData={processCostsOverRevenue(tsla.annualReports)}
+        quarterlyData={processCostsOverRevenue(tsla.quarterlyReports).slice(
           maxQuarterLength * -1
         )}
         labels={costRatioLabelConfig}
@@ -99,8 +99,8 @@ export default async function Page({
       />
       <LineBarComposedChart
         labels={composedLabelConfig}
-        annualData={processOperatingExpenses(apiData.annualReports)}
-        quarterlyData={processOperatingExpenses(apiData.quarterlyReports).slice(
+        annualData={processOperatingExpenses(tsla.annualReports)}
+        quarterlyData={processOperatingExpenses(tsla.quarterlyReports).slice(
           maxQuarterLength * -1
         )}
         title="Operating Expenses"

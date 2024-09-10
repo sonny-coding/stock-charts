@@ -1,23 +1,42 @@
 import { stockSymbols } from "@/data";
+import { symbol } from "d3";
 import Link from "next/link";
+// import { removeDuplicates } from "@/lib/utils";
 
-const handleSearch = (query: string) => {
-  const filteredSymbols = stockSymbols.filter((symbol) => {
+// const allSymbols = removeDuplicates(stockSymbols);
+
+const searchSymbols = async (query: string, apiKey: string) => {
+  const localResults = stockSymbols.filter((symbol) => {
     const nameMatch = symbol.name.toLowerCase().includes(query.toLowerCase());
     const symbolMatch = symbol.symbol
       .toLowerCase()
       .includes(query.toLowerCase());
     return nameMatch || symbolMatch;
   });
-  return filteredSymbols.slice(0, 5);
+  if (localResults.length === 0) {
+    try {
+      const res = await fetch(
+        `https://www.alphavantage.co/query?function=SYMBOL_SEARCH&keywords=${query}&apikey=${apiKey}`
+      );
+      const data = await res.json();
+      return data.bestMatches.slice(0, 5);
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  }
+
+  return localResults.slice(0, 5);
 };
 
-const SearchResults = ({ query }: { query: string }) => {
+const SearchResults = async ({ query }: { query: string }) => {
   if (query === "") {
     return <div></div>;
   }
 
-  const results = handleSearch(query);
+  const results = await searchSymbols(
+    query,
+    process.env.ALPHA_VANTAGE_KEY as string
+  );
 
   return (
     <div className="mt-4 w-full">
@@ -25,7 +44,7 @@ const SearchResults = ({ query }: { query: string }) => {
         <>
           <h3 className="text-lg font-semibold mb-2">Matching Stocks:</h3>
           <ul className="space-y-2">
-            {results.map((result) => (
+            {results.map((result: any) => (
               <Link
                 key={result.symbol}
                 href={`/s/${result.symbol}`}

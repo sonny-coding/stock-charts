@@ -218,3 +218,7 @@ export const formatValue = (
     }).format(value);
   }
 };
+
+export const removeDuplicates = (arr: any[]) => {
+  return [...new Set(arr)];
+};
