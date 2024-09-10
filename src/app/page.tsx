@@ -4,7 +4,7 @@ import DialogDemo from "@/components/header/SearchDialog";
 import Search from "@/components/search/Search";
 import SearchResults from "@/components/search/SearchResults";
 
-const page = ({
+const page = async ({
   searchParams,
 }: {
   searchParams?: {
@@ -22,6 +22,7 @@ const page = ({
         <div className="flex flex-col items-center space-x-2">
           <Search placeholder="Search..." />
           <SearchResults query={query} />
+
           {/* <DialogDemo query={query} /> */}
         </div>
       </div>
