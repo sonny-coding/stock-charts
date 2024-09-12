@@ -1,6 +1,3 @@
-"use client";
-
-import DialogDemo from "@/components/header/SearchDialog";
 import Search from "@/components/search/Search";
 import SearchResults from "@/components/search/SearchResults";
 

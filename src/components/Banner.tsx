@@ -1,5 +1,3 @@
-import React, { Suspense } from "react";
-
 import { Card, CardHeader } from "./ui/card";
 import { Star } from "lucide-react";
 import { handleFavoriteStock } from "@/lib/actions/handle-ticker";
@@ -28,12 +26,31 @@ const isTickerInFavorites = async (ticker: string) => {
   }
 };
 
+const fetchProfile = async (ticker: string, apiKey: string) => {
+  const res = await fetch(
+    `https://yahoo-finance15.p.rapidapi.com/api/v1/markets/stock/modules?ticker=${ticker}&module=asset-profile`,
+    {
+      headers: {
+        "x-rapidapi-key": apiKey,
+        "x-rapidapi-host": "yahoo-finance15.p.rapidapi.com",
+      },
+    }
+  );
+  const data = await res.json();
+  // console.log("🚀 ~ fetchProfile ~ data:", data);
+  return data;
+};
+
 const Banner = async ({ ticker }: BannerProps) => {
   const { user } = await getAuth();
+  const profile = await fetchProfile(
+    ticker,
+    process.env.X_RAPIDAPI_KEY as string
+  );
   const isFavorite = await isTickerInFavorites(ticker);
   return (
     <Card className="">
-      <CardHeader>
+      <CardHeader className="flex flex-row justify-between items-center">
         <form className="" action={handleFavoriteStock.bind(null, ticker)}>
           <button
             type="submit"
@@ -49,6 +66,21 @@ const Banner = async ({ ticker }: BannerProps) => {
             )}
           </button>
         </form>
+
+        <div className="flex-row gap-7 flex">
+          <div className="text-center hidden sm:block">
+            <p className="text-gray-400 text-sm">SECTOR</p>
+            <p>{profile?.body?.sectorDisp}</p>
+          </div>
+          <div className="text-center">
+            <p className="text-gray-400 text-sm">INDUSTRY</p>
+            <p>{profile?.body?.industryDisp}</p>
+          </div>
+          <div className="text-center hidden sm:block">
+            <p className="text-gray-400 text-sm">EMPLOYEES</p>
+            <p>{profile?.body?.fullTimeEmployees}</p>
+          </div>
+        </div>
       </CardHeader>
     </Card>
   );

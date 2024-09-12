@@ -94,10 +94,11 @@ export function processGrowth(data: any[]) {
     const calculateGrowth = (current: string, previous: string): number => {
       const currentValue = parseFloat(current);
       const previousValue = parseFloat(previous);
-      const growth = (currentValue - previousValue) / previousValue;
-      if (growth < 0) {
-        return Number(growth * -1);
-      } else return Number(growth);
+      const growth = currentValue / previousValue - 1;
+      // if (growth < 0) {
+      //   return Number(growth * -1);
+      // } else return Number(growth);
+      return Number(growth);
     };
 
     growthRates.push({

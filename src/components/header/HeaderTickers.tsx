@@ -21,7 +21,7 @@ const HeaderTickers = async () => {
   // }
 
   return (
-    <ul className="flex gap-5 text-foreground">
+    <ul className="md:flex gap-5 text-foreground hidden">
       {favoriteStocks.map((stock) => (
         <Link
           href={`/s/${stock.ticker}`}
